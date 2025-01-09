@@ -14,7 +14,6 @@
     try {
       isAuth.value = await isAuthenticated();
       if (!isAuth.value) {
-        console.log('Not authenticated');
         isLoading.value = false;
         return;
       }

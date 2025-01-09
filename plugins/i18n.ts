@@ -44,6 +44,11 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.typeOfExercise3':'Bicep curl (Dumbbell)',
       'workout.typeOfExercise4':'Hammer curl (Dumbbell)',
       'workout.typeOfExercise5':'Plank',
+      'workout.typeOfExercise6':'Superman',
+      'workout.typeOfExercise7':'Overhead Press (Dumbbell)',
+      'workout.typeOfExercise8':'Flat Knee Raise',
+      'workout.typeOfExercise9':'Russian Twist',
+      'workout.typeOfExercise10':'Yoga',
 
       
   

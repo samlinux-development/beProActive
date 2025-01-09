@@ -9,7 +9,13 @@ const exerciseOptions = [
   { value: 2, info:'sqaut', text:'', add:'kg'},
   { value: 3, info:'bicep_curl', text:'', add:'kg'},
   { value: 4, info:'hammer_curl', text:'', add:'kg'},
-  { value: 5, info:'Plank', text:'', add:'seconds'}
+  { value: 5, info:'plank', text:'', add:'seconds'},
+  { value: 6, info:'superman', text:'', add:'seconds'},
+  { value: 7, info:'overhead_press', text:'', add:'seconds'},
+  { value: 8, info:'flate_knee_raise', text:'', add:'kg'},
+  { value: 9, info:'russian_twist', text:'', add:'kg'},
+  { value: 10, info:'yoga', text:'', add:'seconds'},
+
   // Add more options as needed
 ];
 

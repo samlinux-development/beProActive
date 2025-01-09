@@ -7,7 +7,7 @@ const { $translate } = useNuxtApp();
   <img class="image" src="/beActive.webp" alt="Be Active"/>
   <div>{{ $translate ('about.info') }}</div>
   <div>
-    <a href="https://github.com/samlinux-development/ic-nuxt" target="_blank" rel="noopener noreferrer">
+    <a href="https://github.com/samlinux-development/beProActive" target="_blank" rel="noopener noreferrer">
       {{ $translate ('about.github') }}
     </a>
   </div>
