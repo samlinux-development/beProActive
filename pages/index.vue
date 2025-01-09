@@ -1,0 +1,3 @@
+<template>
+   <Workouts />
+</template>

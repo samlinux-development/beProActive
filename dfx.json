@@ -1,0 +1,30 @@
+{
+  "canisters": {
+    "backend": {
+      "main": "backend/main.mo",
+      "type": "motoko"
+    },
+   
+    "frontend": {
+      "dependencies": [
+        "backend"
+      ],
+      "source": [
+        "dist/"
+      ],
+      "type": "assets"
+    },
+    "internet-identity": {
+			"type": "pull",
+			"id": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+		}
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": "mops sources"
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}

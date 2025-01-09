@@ -1,0 +1,35 @@
+type Workout = 
+ record {
+   date: Time;
+   exercises: vec Exercise;
+   user: principal;
+ };
+type Time = int;
+type Main = 
+ service {
+   addWorkout: (vec Exercise) -> (bool);
+   createUserProfile: () -> (bool);
+   getPublicWorkouts: () -> (FetchWorkoutResponsePublic) query;
+   getWorkoutsPerPrincipal: () -> (FetchWorkoutResponse) query;
+   setMaxPublicWorkouts: (nat) -> (bool);
+ };
+type FetchWorkoutResponsePublic = 
+ record {
+   totalUsers: nat;
+   totalWorkouts: nat;
+   workouts: vec Workout;
+ };
+type FetchWorkoutResponse = 
+ record {
+   totalWorkouts: nat;
+   workouts: vec Workout;
+ };
+type Exercise = 
+ record {
+   kg: nat16;
+   repetition: nat16;
+   seconds: nat;
+   set: nat16;
+   typeOfExercise: nat16;
+ };
+service : () -> Main
