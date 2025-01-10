@@ -13,7 +13,6 @@ const props = defineProps<{ nav: NavItem[] }>();
 const { $getActor } = useNuxtApp();
 const config = useRuntimeConfig();
 const isLoggedIn = ref(false);
-const principalId = ref(""); // debug
 
 const router = useRouter();
 
@@ -21,10 +20,11 @@ let iicanisterId = config.public.network === 'local'
   ? `http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943`
   : 'https://identity.ic0.app';
 
-let maxTimeToLiveNs: bigint = BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000);
+  // should be 1 day in nanoseconds
+let maxTimeToLiveNs: bigint = BigInt(1 * 24 * 60 * 60 * 1000 * 1000 * 1000);
+let maxTimeToLiveMs = 1 * 24 * 60 * 60 * 1000;
 
-
-onMounted(() => {
+onMounted(async () => {
   // Check if the user is already logged in
   checkLoginStatus();
 });
@@ -35,23 +35,25 @@ onMounted(() => {
  */
 const login = async () => {
   try {
-    const authClient = await AuthClient.create();
+    const authClient = await AuthClient.create({
+      idleOptions: {
+          idleTimeout: maxTimeToLiveMs
+        }
+    });
     await authClient.login({
       // 7 days in nanoseconds, not sure if this is working ???
       maxTimeToLive: maxTimeToLiveNs,
-
       identityProvider: iicanisterId,
+
       onSuccess: async () => {
         const actor = await $getActor({},true);
-        const identity = await authClient.getIdentity();
-        principalId.value = identity.getPrincipal();
-
+  
         //console.log(actor, principalId);
         isLoggedIn.value = true;
 
-        // create user profile
-        await actor.createUserProfile();
-        
+        // check or create user profile // we  must not wait
+        actor.createUserProfile();
+
         // Redirect to the profile page after login
         router.push({ path: '/profile' });
       },
@@ -66,7 +68,6 @@ const login = async () => {
  */
 const checkLoginStatus = async () => {
   const authClient = await AuthClient.create();
-  principalId.value = authClient.getIdentity().getPrincipal();
   isLoggedIn.value = await authClient.isAuthenticated();
 };
 
@@ -79,10 +80,9 @@ const checkLoginStatus = async () => {
 const logout = async () => {
   const authClient = await AuthClient.create();
   await authClient.logout();
-  principalId.value = authClient.getIdentity().getPrincipal();
 
   isLoggedIn.value = false;
-  await $getActor({},false);
+  await $getActor({},true);
   router.push('/');
 };
 
@@ -139,7 +139,6 @@ const logout = async () => {
 
   .navigation {
     background-color: #f8f9fa;
-    padding: 1rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
@@ -162,8 +161,8 @@ const logout = async () => {
   }
 
   .right-nav .nav-link {
-    height: 32px;
-    width: 32px;
+    height: 48px;
+    width: 48px;
   }
 
   .right-nav .nav-link button.nav-link {

@@ -49,6 +49,22 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.typeOfExercise8':'Flat Knee Raise',
       'workout.typeOfExercise9':'Russian Twist',
       'workout.typeOfExercise10':'Yoga',
+      'workout.typeOfExercise11':'Crunch',
+      'workout.typeOfExercise12':'Leg Raise',
+      'workout.typeOfExercise13':'Bicycle Crunch',
+      'workout.typeOfExercise14':'Bench Dip',
+      'workout.typeOfExercise15':'Chest Dip',
+      'workout.typeOfExercise16':'Ring Dip',
+      'workout.typeOfExercise17':'Tricpes Dip',
+      'workout.typeOfExercise18':'Leg Extension (Maschine)',
+      'workout.typeOfExercise19':'Leg Press (Maschine)',
+      'workout.typeOfExercise20':'Bench Press (Barbell)',
+      'workout.typeOfExercise21':'Bench Press (Dumbbell)',
+      'workout.typeOfExercise22':'Bicep Curl (Barbell)',
+      'workout.typeOfExercise23':'Reverse Curl (Dumbbell)',
+
+
+
 
       
   

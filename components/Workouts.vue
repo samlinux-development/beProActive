@@ -9,7 +9,7 @@ const { $translate, $getActor } = useNuxtApp();
 const workouts = ref<Workout[]>([]);
 const totalUsers = ref<number>(0);
 
-const isloading = ref(true);
+const isLoading = ref(true);
 
 onMounted(async () => {
   try {
@@ -22,7 +22,7 @@ onMounted(async () => {
     // sort the push-ups by date
     workouts.value.sort((a, b) => Number(b.date) - Number(a.date));
 
-    isloading.value = false;
+    isLoading.value = false;
   } catch (error) {
     console.error("Error fetching workouts:", error);
     // Handle the error gracefully, e.g., display an error message to the user

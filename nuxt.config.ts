@@ -5,6 +5,7 @@ let image = 'https://guxxd-cyaaa-aaaai-aq34a-cai.icp0.io/beActive.png';
 let keywords = 'Be ProActive, fitness, workout, push-ups, community, health, active, IcAcademy';
 export default defineNuxtConfig({
   ssr: false,
+
   compatibilityDate: '2024-11-01',
   devtools: {
     enabled: true,
@@ -25,14 +26,15 @@ export default defineNuxtConfig({
     }
   },
 
-  modules: ['@nuxt/icon', '@nuxt/image'],
+  modules: ['@nuxt/icon', '@nuxt/image','@nuxt/ui'],
+  css: ['~/assets/css/main.css'],
   image: {
     dir: 'static', 
     staticFilename: '/[name]-[hash][ext]'
   },
   app: {
     head: {
-      title: 'IcAcademy - Be ProActive',
+      title: 'Be ProActive - IcAcademy ',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' },

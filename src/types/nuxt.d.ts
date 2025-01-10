@@ -5,7 +5,7 @@ import { _SERVICE } from '../src/declarations/backend/backend.did';
 
 declare module '#app' {
   interface NuxtApp {
-    $getActor(): ActorSubclass<_SERVICE>;
+    $getActor(option:any, createActor:boolean): ActorSubclass<_SERVICE>;
   }
 
   interface NuxtApp {

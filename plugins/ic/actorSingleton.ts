@@ -31,20 +31,25 @@ const getIdentity = async () => {
   }
 };
 
-export const getActor = async (options?: OptionsType, clearActor:boolen): ActorSubclass<_SERVICE> => {
+export const getActor = async (options: OptionsType, clearActor: boolean): Promise<ActorSubclass<_SERVICE>> => {
   // to switch between login and logout
   if (clearActor) {actorInstance = null;}
 
   if (!actorInstance) {
 
-    //console.log('>> createActor as singleton pattern <<');
+    console.log('>> createActor as singleton pattern <<');
       
     const config = useRuntimeConfig();
     const canisterId = config.public.backendCanisterId;
     const network = config.public.network || 'local';
     const identity = await getIdentity();
-    //console.log('Principal: ',identity.getPrincipal().toText());
-
+    /*
+    if (identity) {
+      console.log('Principal: ', identity.getPrincipal().toText());
+    } else {
+      console.log("Identity is undefined");
+    }
+    */
     let _host = 'http://localhost:4943';
     const hosts = ['ic', 'playground'];
 

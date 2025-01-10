@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import './css/app.css';
+  import 'assets/css/app.css';
 
   // Define the public links
   const nav = [
@@ -9,9 +9,11 @@
 
 </script>
 <template>
-  <div class="app">
-    <Navigation :nav="nav" />
-    <NuxtLoadingIndicator />
-    <NuxtPage />
-  </div>
+  <UApp>
+    <div class="app">
+      <Navigation :nav="nav" />
+      <NuxtLoadingIndicator />
+      <NuxtPage />
+    </div>
+  </UApp>
 </template>

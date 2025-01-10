@@ -3,18 +3,38 @@ import { ref } from 'vue';
 import {type Exercise} from '../src/declarations/backend/backend.did.d.ts';
 
 const { $translate } = useNuxtApp();
+const value = ref(null);
 
 const exerciseOptions = [
-  { value: 1, info:'pushUps', text:'', add:'kg'},
-  { value: 2, info:'sqaut', text:'', add:'kg'},
-  { value: 3, info:'bicep_curl', text:'', add:'kg'},
-  { value: 4, info:'hammer_curl', text:'', add:'kg'},
-  { value: 5, info:'plank', text:'', add:'seconds'},
-  { value: 6, info:'superman', text:'', add:'seconds'},
-  { value: 7, info:'overhead_press', text:'', add:'seconds'},
-  { value: 8, info:'flate_knee_raise', text:'', add:'kg'},
-  { value: 9, info:'russian_twist', text:'', add:'kg'},
-  { value: 10, info:'yoga', text:'', add:'seconds'},
+  { value: "1", info:'pushUps', label:'', add:'kg'},
+  { value: "2", info:'sqaut', label:'', add:'kg'},
+  { value: "3", info:'bicep_curl', label:'', add:'kg'},
+  { value: "4", info:'hammer_curl', label:'', add:'kg'},
+  { value: "5", info:'plank', label:'', add:'seconds'},
+  { value: "6", info:'superman', label:'', add:'seconds'},
+  { value: "7", info:'overhead_press', label:'', add:'kg'},
+  { value: "8", info:'flate_knee_raise', label:'', add:'kg'},
+  { value: "9", info:'russian_twist', label:'', add:'kg'},
+  { value: "10", info:'yoga', label:'', add:'seconds'},
+  
+  { value: "11", info:'crunch', label:'', add:'kg'},
+  { value: "13", info:'bicycle_crunch', label:'', add:'kg'},
+  { value: "12", info:'leg_raise', label:'', add:'kg'},
+  
+  { value: "14", info:'bench_dip', label:'', add:'kg'},
+  { value: "15", info:'chest_dip', label:'', add:'kg'},
+  { value: "16", info:'ring_dip', label:'', add:'kg'},
+  { value: "17", info:'triceps_dip', label:'', add:'kg'},
+
+  { value: "18", info:'leg_extension_maschine', label:'', add:'kg'},
+  { value: "19", info:'leg_press_maschine', label:'', add:'kg'},
+
+  { value: "20", info:'bench_press_barbbell', label:'', add:'kg'},
+  { value: "21", info:'bench_press_dumbbell', label:'', add:'kg'},
+  
+  { value: "22", info:'bicep_curl_barbell', label:'', add:'kg'},
+  { value: "23", info:'reverse_curl_dumbbell', label:'', add:'kg'},
+
 
   // Add more options as needed
 ];
@@ -22,12 +42,13 @@ const exerciseOptions = [
 const translateExerciseOptions = () => {
   return exerciseOptions.map(option => ({
     ...option,
-    text: $translate(`workout.typeOfExercise${option.value}`)
+    label: $translate(`workout.typeOfExercise${option.value}`)
   }));
 };
 
 const translatedExerciseOptions = translateExerciseOptions();
-translatedExerciseOptions.sort((a, b) => a.text.localeCompare(b.text));
+translatedExerciseOptions.sort((a, b) => a.label.localeCompare(b.label));
+
 
 const executions = ref<Exercise[]>([
   { typeOfExercise: null, set: null, repetition: null, kg: null }
@@ -52,66 +73,70 @@ watch(executions, (newExecutions) => {
   }
 });
 
-defineExpose({ executions });
 
+defineExpose({ executions });
 
 </script>
 
 <template>
   <div>
-   
+
     <div class="execution-form">
-   
+      
       <div class="execution-labels">
         <label for="typeOfExercise">{{$translate ('workout.typeOfExercise')}}</label>
       </div>
- 
+      
       <div v-for="(execution, index) in executions" :key="index" >
         <div class="execution-item">
-          <select v-model="execution.typeOfExercise">
-            <option v-for="option in translatedExerciseOptions" :key="option.value" :value="option.value">
-              {{ option.text }}
-            </option>
-          </select>
+          
+          <USelect 
+            placeholder="Select exercise"  
+            v-model="execution.typeOfExercise" 
+            :items="translatedExerciseOptions" 
+            class="w-[300px]"/>
+
+          <UButton v-if="index > 0" @click="removeExecution(index)" color="error">
+            <Icon name="i-lucide-trash" class="icon" />
+          </UButton>
         </div>
 
         <div class="execution-item" v-if="execution.typeOfExercise !== null">
-          <input 
-            type="number" 
-            v-model="execution.set"
-            placeholder="set"
-            />
+            <UInput 
+              type="number"  
+              v-model="execution.set" 
+              placeholder="set" 
+              class="w-[60px] sm:w-[80px]"/>
 
-          <input 
-            v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'kg'"
-            type="number" 
-            v-model="execution.repetition" 
-            placeholder="reps"
-            />
+            <UInput  
+              v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'kg'"
+              type="number" 
+              v-model="execution.repetition" 
+              placeholder="reps" 
+              class="w-[60px] sm:w-[80px]"/>
 
-            <input 
+            <UInput 
               v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'kg'"
               type="number" 
               v-model="execution.kg" 
               @keyup.enter="addExecution"
               placeholder="kg"
+              class="w-[60px] sm:w-[80px]"
             />
 
-            <input 
+            <UInput 
               v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'seconds'"
               type="number" 
               v-model="execution.seconds" 
               @keyup.enter="addExecution"
               placeholder="sec"
+              class="w-[60px] sm:w-[80px]"
             />
             
-            <button type="button" v-if="index === executions.length - 1 && execution.set !== null && execution.repetition !== null || execution.seconds !== null" @click="addExecution">
-              <Icon name="fa6-regular:square-plus" class="icon" />
-            </button>
+            <UButton v-if="index === executions.length - 1 && (execution.set !== null && (execution.repetition !== null || execution.seconds !== null))" @click="addExecution">
+              <Icon name="i-lucide-plus" class="icon" />
+            </UButton>
 
-            <button type="button" v-if="index > 0" @click="removeExecution(index)">
-              <Icon name="fa6-regular:trash-can" class="icon" />
-            </button>
           </div>
 
       </div>
@@ -144,39 +169,8 @@ defineExpose({ executions });
     margin-bottom: 0.5rem;
   }
 
-  .execution-item select{
-    width: 100%;
-    padding: 0.25rem;
-    border-radius: 0.25rem;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-  }
-
   label {
     font-weight: bold;
-  }
-
-  input,
-  button {
-    width: 60px;
-    padding: 0.25rem;
-    border-radius: 0.25rem;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-  }
-
-  button {
-    width: 25px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    padding: 0.25rem;
-  }
-
-  button:hover {
-    background-color: #c82333;
   }
 
 /* Media query for smaller screens   */
@@ -184,19 +178,11 @@ defineExpose({ executions });
   .execution-item {
     grid-template-columns: 1fr;
   }
-  .execution-item select {
-    width: 90%;
-  }
-
+  
   .execution-form {
     gap: 0.25rem;
   }
-  input {
-    width: 50px;
-  }
-  button {
-    width: 30px;
-  }
+
 }
 
 </style>

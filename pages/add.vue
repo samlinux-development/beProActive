@@ -1,11 +1,12 @@
 <script setup lang="ts">
   import { ref } from 'vue'
-  import {type Exercise} from '../src/declarations/backend/backend.did.d.ts';
-  import { isAuthenticated } from '../utils/helper.ts';
+  import {type Exercise} from '../src/declarations/backend/backend.did.d';
+  import { isAuthenticated } from '../utils/helper';
   const { $translate, $getActor } = useNuxtApp();
 
   const isLoading = ref<boolean>(false);
   const isAuth = ref(false);
+  const isCheckingAuth = ref<boolean>(true);
 
   interface ExecutionList {
     executions: Exercise[];
@@ -19,14 +20,14 @@
     try {
       isLoading.value = true;
       const executions = executionListRef.value?.executions || [];
-      const actor = await $getActor();
+      const actor = await $getActor({}, true);
     
       // prepare an array with the count and repetition values
       const executionList = executions.map((execution) => {
         // check if values available
         let set = execution.set || 0;
-        let repetition = execution.repetition || 0;
-        let typeOfExercise = execution.typeOfExercise || 0;
+        let repetition = parseInt(execution.repetition.toString()) || 0;
+        let typeOfExercise = parseInt(execution.typeOfExercise.toString()) || 0;
         let kg = execution.kg || 0;
         let seconds = execution.seconds || 0;
         return { set, repetition, typeOfExercise, kg, seconds };
@@ -77,31 +78,56 @@
     catch (error) {
       console.error("Error checking auth:", error);
     }
+    finally {
+      isCheckingAuth.value = false;
+    }
   });
 
 </script>
 
 <template>
-
-  <div v-if="!isAuth">
-    <PleaseLogin />
+  <div v-if="isCheckingAuth">
+    <Spinner />
   </div>
-  <div v-else-if="isAuth">
-    <h1>{{ $translate ('workout.title') }}</h1>
-    <form type="submit" v-if="!isLoading">
-      <ExecutionList ref="executionListRef"/>
-      <button type="button" :disabled="isLoading || !isFormValid" @click="openModal">{{$translate ('workout.addBtn')}}</button>
-    </form>
-    
-    <div v-if="isLoading"> <Spinner /> </div>
+  <div v-else>
+     
+    <div v-if="!isAuth">
+      <PleaseLogin />
+    </div>
 
-    <Modal v-if="showModal" 
-      :title="$translate('workout.confirm-title')"
-      :message="$translate('workout.confirm-text')" 
-      :confirmText="$translate('workout.confirm-yes')" 
-      :cancelText="$translate('workout.confirm-no')"
-      @confirm="confirmAddExercise" 
-      @close="closeModal" />
+    <div v-else-if="isAuth">
+      <h1>{{ $translate ('workout.title') }}</h1>
+      <form type="submit" v-if="!isLoading">
+        <ExecutionList ref="executionListRef"/>
+
+        <UModal 
+          :title="$translate('workout.confirm-title')"
+          :close="{
+            color: 'error',
+            variant: 'outline',
+            class: 'rounded-full'
+          }">
+          <UButton 
+            icon="i-lucide-git-graph" 
+            :disabled="isLoading || !isFormValid" 
+            @click="openModal" 
+            size="md" 
+            color="primary" 
+            variant="solid">
+            {{$translate ('workout.addBtn')}}
+          </UButton>
+
+          <template #body>
+            {{$translate('workout.confirm-text')}}
+            <div class="modal-actions">
+              <UButton @click="confirmAddExercise">{{ $translate('workout.confirm-yes') }}</UButton>  
+            </div>
+          </template>
+        </UModal>
+      </form>
+      
+      <div v-if="isLoading"> <Spinner /> </div>  
+    </div>
   </div>
 </template>
 
@@ -120,43 +146,9 @@
   label {
     font-weight: bold;
   }
-
-  input,
-  button {
-    width: 50%;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    border: 1px solid #ccc;
-  }
-
-  button {
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-  }
-
-  button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-
-  button:hover:enabled {
-    background-color: #0056b3;
-  }
-
-  input[type="text"] {
-    width: calc(50% - 16px);
-  }
-
-  form {
-    width: calc(100% - 32px);
-  }
-
-  /* Media query for smaller screens   */
-  @media (max-width: 600px) {
-
-    button {
-      width: calc(100% - 16px);
-    }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
   }
 </style>

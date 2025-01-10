@@ -10,8 +10,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   // console.log('Hello from the IC plugin!');
 
   // Inject $getActor in Vue, context, and store.
-  nuxtApp.provide('getActor', async(options?: OptionsType, clearActor?:boolean) => {
-    return await getActor({}, clearActor);
+  nuxtApp.provide('getActor', async(options: OptionsType, clearActor:boolean) => {
+    return await getActor(options, clearActor);
   });
   
 });

@@ -14,7 +14,7 @@
 
 <template>
   <div>
-    {{ Number(exercise.set) }} x <span v-if="Number(exercise.kg) !== 0">{{ Number(exercise.repetition) }} </span>
+    {{ Number(exercise.set) }} x <span v-if="Number(exercise.repetition) > 0">{{ Number(exercise.repetition) }} </span>
   
     {{$translate(`workout.typeOfExercise${(Number(exercise.typeOfExercise))}`)}}
     <span v-if="Number(exercise.kg) !== 0">{{ Number(exercise.kg) }}  {{$translate('workout.kg')}}</span>
