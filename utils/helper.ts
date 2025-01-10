@@ -1,4 +1,3 @@
-import { AuthClient } from "@dfinity/auth-client";
 
 export const formatDate = (nanoseconds: number | bigint): string => {
   const milliseconds = Number(nanoseconds) / 1e6; // Convert nanoseconds to a Number
@@ -21,9 +20,9 @@ export const formatNumber = (number: number) => {
 };
 
 export const getIdentity = async () => {
+  let { $authClient } = useNuxtApp() as any;
   try {
-    const authClient = await AuthClient.create();
-    const identity = authClient.getIdentity();
+    const identity = $authClient.getIdentity();
     return identity;
   } catch (error) {
     console.error("Error getting identity:", error);
@@ -36,6 +35,7 @@ export const isAuthenticated = async (): Promise<boolean> => {
     return !identity?.getPrincipal().isAnonymous();
   } catch (error) {
     console.error("Error getting identity:", error);
+    return false;
   }
 } 
 

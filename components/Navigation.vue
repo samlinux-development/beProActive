@@ -1,16 +1,17 @@
-
 <script setup lang="ts">
-import { AuthClient } from "@dfinity/auth-client"
+
 import { useNuxtApp, useRouter, useRuntimeConfig } from '#app';
 
-interface NavItem {
-  label: string;
-  to: string;
-  icon: string;
-}
+// Define public links
+const nav = [
+  { label: 'Home', to: '/', icon: 'mdi:book-open-blank-variant-outline' },
+  { label: 'About', to: '/about', icon: 'mdi:information-slab-circle-outline' },
+];
 
-const props = defineProps<{ nav: NavItem[] }>();
 const { $getActor } = useNuxtApp();
+let { $authClient } = useNuxtApp() as any;
+const { $maxTimeToLiveNs } = useNuxtApp();
+
 const config = useRuntimeConfig();
 const isLoggedIn = ref(false);
 
@@ -20,13 +21,9 @@ let iicanisterId = config.public.network === 'local'
   ? `http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943`
   : 'https://identity.ic0.app';
 
-  // should be 1 day in nanoseconds
-let maxTimeToLiveNs: bigint = BigInt(1 * 24 * 60 * 60 * 1000 * 1000 * 1000);
-let maxTimeToLiveMs = 1 * 24 * 60 * 60 * 1000;
-
 onMounted(async () => {
   // Check if the user is already logged in
-  checkLoginStatus();
+  await checkLoginStatus();
 });
 
 /**
@@ -35,20 +32,16 @@ onMounted(async () => {
  */
 const login = async () => {
   try {
-    const authClient = await AuthClient.create({
-      idleOptions: {
-          idleTimeout: maxTimeToLiveMs
-        }
-    });
-    await authClient.login({
+    await $authClient.login({
       // 7 days in nanoseconds, not sure if this is working ???
-      maxTimeToLive: maxTimeToLiveNs,
+      maxTimeToLive: $maxTimeToLiveNs,
       identityProvider: iicanisterId,
 
       onSuccess: async () => {
         const actor = await $getActor({},true);
-  
-        //console.log(actor, principalId);
+
+        //const identity = $authClient.getIdentity();
+        //console.log('PI: ',identity.getPrincipal().toText());
         isLoggedIn.value = true;
 
         // check or create user profile // we  must not wait
@@ -67,8 +60,7 @@ const login = async () => {
  * Check login status
  */
 const checkLoginStatus = async () => {
-  const authClient = await AuthClient.create();
-  isLoggedIn.value = await authClient.isAuthenticated();
+  isLoggedIn.value = await $authClient.isAuthenticated();
 };
 
 /**
@@ -78,8 +70,7 @@ const checkLoginStatus = async () => {
  */ 
 
 const logout = async () => {
-  const authClient = await AuthClient.create();
-  await authClient.logout();
+  await $authClient.logout();
 
   isLoggedIn.value = false;
   await $getActor({},true);

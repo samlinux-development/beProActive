@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useNuxtApp } from '#app'
 import { type Workout } from '../src/declarations/backend/backend.did.js';
-import { formatNumber, splitPrincipalID, formatDate, replaceCount } from '../utils/helper.ts';
+import { splitPrincipalID, formatDate, replaceCount } from '../utils/helper';
 
 const { $translate, $getActor } = useNuxtApp();
 
@@ -13,7 +13,7 @@ const isLoading = ref(true);
 
 onMounted(async () => {
   try {
-    const actor = await $getActor();
+    const actor = await $getActor({},true);
     const result = await actor.getPublicWorkouts();
     //console.log(result.workouts);
     workouts.value = result.workouts;

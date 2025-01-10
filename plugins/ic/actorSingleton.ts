@@ -1,6 +1,5 @@
 import { idlFactory } from "../../src/declarations/backend/backend.did.js";
 import { Actor, HttpAgent } from "@dfinity/agent";
-import { AuthClient } from "@dfinity/auth-client";
 
 import type { ActorSubclass } from "@dfinity/agent";
 import type { _SERVICE } from "../../src/declarations/backend/backend.did";
@@ -21,28 +20,20 @@ type OptionsType = {
 
 let actorInstance: ActorSubclass<_SERVICE> | null = null;
 
-const getIdentity = async () => {
-  try {
-    const authClient = await AuthClient.create();
-    const identity = authClient.getIdentity();
-    return identity;
-  } catch (error) {
-    console.error("Error getting identity:", error);
-  }
-};
-
 export const getActor = async (options: OptionsType, clearActor: boolean): Promise<ActorSubclass<_SERVICE>> => {
   // to switch between login and logout
+  let { $authClient } = useNuxtApp() as any;
+
   if (clearActor) {actorInstance = null;}
 
   if (!actorInstance) {
 
-    console.log('>> createActor as singleton pattern <<');
+    //console.log('>> createActor as singleton pattern <<');
       
     const config = useRuntimeConfig();
     const canisterId = config.public.backendCanisterId;
     const network = config.public.network || 'local';
-    const identity = await getIdentity();
+    const identity = $authClient.getIdentity();
     /*
     if (identity) {
       console.log('Principal: ', identity.getPrincipal().toText());
@@ -50,6 +41,7 @@ export const getActor = async (options: OptionsType, clearActor: boolean): Promi
       console.log("Identity is undefined");
     }
     */
+
     let _host = 'http://localhost:4943';
     const hosts = ['ic', 'playground'];
 
