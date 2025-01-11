@@ -28,6 +28,9 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/icon', '@nuxt/image','@nuxt/ui'],
   css: ['~/assets/css/main.css'],
+  colorMode: {
+    preference: 'light'
+  },
   image: {
     dir: 'static', 
     staticFilename: '/[name]-[hash][ext]'

@@ -1,21 +1,28 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import {type Exercise} from '../src/declarations/backend/backend.did.d.ts';
+
+type Exercise = {
+  set: any;
+  repetition: any;
+  kg: any;
+  typeOfExercise: any;
+  seconds: any;
+  minutes: any;
+};
 
 const { $translate } = useNuxtApp();
-const value = ref(null);
 
 const exerciseOptions = [
   { value: "1", info:'pushUps', label:'', add:'kg'},
   { value: "2", info:'sqaut', label:'', add:'kg'},
   { value: "3", info:'bicep_curl', label:'', add:'kg'},
   { value: "4", info:'hammer_curl', label:'', add:'kg'},
-  { value: "5", info:'plank', label:'', add:'seconds'},
+  { value: "5", info:'plank', label:'', add:'minutes'},
   { value: "6", info:'superman', label:'', add:'seconds'},
   { value: "7", info:'overhead_press', label:'', add:'kg'},
   { value: "8", info:'flate_knee_raise', label:'', add:'kg'},
   { value: "9", info:'russian_twist', label:'', add:'kg'},
-  { value: "10", info:'yoga', label:'', add:'seconds'},
+  { value: "10", info:'yoga', label:'', add:'minutes'},
   
   { value: "11", info:'crunch', label:'', add:'kg'},
   { value: "13", info:'bicycle_crunch', label:'', add:'kg'},
@@ -34,6 +41,7 @@ const exerciseOptions = [
   
   { value: "22", info:'bicep_curl_barbell', label:'', add:'kg'},
   { value: "23", info:'reverse_curl_dumbbell', label:'', add:'kg'},
+  { value: "24", info:'stretching', label:'', add:'minutes'},
 
 
   // Add more options as needed
@@ -51,14 +59,14 @@ translatedExerciseOptions.sort((a, b) => a.label.localeCompare(b.label));
 
 
 const executions = ref<Exercise[]>([
-  { typeOfExercise: null, set: null, repetition: null, kg: null }
+  { typeOfExercise: null, set: null, repetition: null, kg: null, seconds: null, minutes: null }
 ]);
 
 const addExecution = async () => {
 
   const lastExecution = executions.value[executions.value.length - 1];
-  if (lastExecution.set !== null && lastExecution.repetition !== null && lastExecution.typeOfExercise !== null || lastExecution.seconds !== null) { 
-    executions.value.push({ set: 1, repetition: null, kg: null, typeOfExercise: null, seconds: null });
+  if (lastExecution.set !== null && lastExecution.repetition !== null && lastExecution.typeOfExercise !== null || lastExecution.seconds !== null || lastExecution.minutes !== null) { 
+    executions.value.push({ set: 1, repetition: null, kg: null, typeOfExercise: null, seconds: null, minutes:null });
   }
 };
 
@@ -68,7 +76,7 @@ const removeExecution = (index: number) => {
 
 watch(executions, (newExecutions) => {
   const lastExecution = newExecutions[newExecutions.length - 1];
-  if (lastExecution && lastExecution.set !== null && (lastExecution.repetition !== null || lastExecution.seconds !== null)) {
+  if (lastExecution && lastExecution.set !== null && (lastExecution.repetition !== null || lastExecution.seconds !== null || lastExecution.minutes !== null)) {
     addExecution();
   }
 });
@@ -132,8 +140,17 @@ defineExpose({ executions });
               placeholder="sec"
               class="w-[60px] sm:w-[80px]"
             />
+
+            <UInput 
+              v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'minutes'"
+              type="number" 
+              v-model="execution.minutes" 
+              @keyup.enter="addExecution"
+              placeholder="min"
+              class="w-[60px] sm:w-[80px]"
+            />
             
-            <UButton v-if="index === executions.length - 1 && (execution.set !== null && (execution.repetition !== null || execution.seconds !== null))" @click="addExecution">
+            <UButton v-if="index === executions.length - 1 && (execution.set !== null && (execution.repetition !== null || execution.seconds !== null || execution.minutes !== null))" @click="addExecution">
               <Icon name="i-lucide-plus" class="icon" />
             </UButton>
 

@@ -23,6 +23,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.at': 'at',
       'workout.kg': 'kg',
       'workout.seconds': 'sec',
+      'workout.minutes': 'min',
       'workout.repetition': 'Reps',
       'workout.executionDetails':'Exercises',
       'workout.confirm-title':'Ready to submit workout?',
@@ -62,12 +63,8 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.typeOfExercise21':'Bench Press (Dumbbell)',
       'workout.typeOfExercise22':'Bicep Curl (Barbell)',
       'workout.typeOfExercise23':'Reverse Curl (Dumbbell)',
+      'workout.typeOfExercise24':'Stretching',
 
-
-
-
-      
-  
     };
     return translations[key] || key;
   };

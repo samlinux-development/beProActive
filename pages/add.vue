@@ -1,7 +1,16 @@
 <script setup lang="ts">
   import { ref } from 'vue'
-  import {type Exercise} from '../src/declarations/backend/backend.did.d';
   import { isAuthenticated } from '../utils/helper';
+
+interface Exercise {
+  'kg' : number,
+  'set' : number,
+  'seconds' : bigint,
+  'typeOfExercise' : number,
+  'repetition' : number,
+  'minutes'? : number
+}
+
   const { $translate, $getActor } = useNuxtApp();
 
   const isLoading = ref<boolean>(false);
@@ -26,10 +35,16 @@
       const executionList = executions.map((execution) => {
         // check if values available
         let set = execution.set || 0;
-        let repetition = parseInt(execution.repetition.toString()) || 0;
+        let repetition = parseInt(execution.repetition?.toString()) || 0;
         let typeOfExercise = parseInt(execution.typeOfExercise.toString()) || 0;
-        let kg = execution.kg || 0;
-        let seconds = execution.seconds || 0;
+        let kg = parseInt(execution.kg?.toString()) || 0;
+        let seconds = parseInt(execution.seconds?.toString()) || 0;
+        // if minutes available overwrite seconds
+        if (execution.minutes && execution.minutes > 0) {
+          seconds = execution.minutes * 60;
+        }
+        //console.log({ set, repetition, typeOfExercise, kg, seconds })
+
         return { set, repetition, typeOfExercise, kg, seconds };
       });
       
@@ -39,7 +54,7 @@
       executionListRef = ref(null);
 
     } catch (error) {
-      console.error("Error adding push-up:", error);
+      console.error("Error adding addExercise:", error);
     } finally {
       isLoading.value = false;
     }
@@ -50,7 +65,11 @@
     return executionListRef.value?.executions.every(execution => 
       execution.typeOfExercise !== null && execution.typeOfExercise > 0 &&
       execution.set !== null && execution.set > 0 &&
-      execution.repetition !== null && execution.repetition > 0 || (execution.seconds !== null && execution.seconds > 0)
+      execution.repetition !== null && execution.repetition > 0 || 
+      (
+        (execution.seconds !== null && execution.seconds > 0) ||
+        (execution.minutes !== undefined && execution.minutes > 0)
+      )
     );
   });
 
