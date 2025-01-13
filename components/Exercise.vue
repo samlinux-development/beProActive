@@ -2,7 +2,7 @@
   const { $translate } = useNuxtApp();
   
   // temp helper to know types with minutes
-  const minTypes = [5,10,24];
+  const minTypes = [5,6,10,24,25];
 
   interface Exercise {
     typeOfExercise: number | null;

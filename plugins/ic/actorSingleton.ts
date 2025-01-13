@@ -33,7 +33,7 @@ export const getActor = async (options: OptionsType, clearActor: boolean): Promi
     const config = useRuntimeConfig();
     const canisterId = config.public.backendCanisterId;
     const network = config.public.network || 'local';
-    const identity = $authClient.getIdentity();
+    const identity = await $authClient.getIdentity();
     /*
     if (identity) {
       console.log('Principal: ', identity.getPrincipal().toText());

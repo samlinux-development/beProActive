@@ -12,13 +12,14 @@ type Exercise = {
 
 const { $translate } = useNuxtApp();
 
+// Hint: add in Exercise.vue the types with minutes
 const exerciseOptions = [
   { value: "1", info:'pushUps', label:'', add:'kg'},
   { value: "2", info:'sqaut', label:'', add:'kg'},
   { value: "3", info:'bicep_curl', label:'', add:'kg'},
   { value: "4", info:'hammer_curl', label:'', add:'kg'},
   { value: "5", info:'plank', label:'', add:'minutes'},
-  { value: "6", info:'superman', label:'', add:'seconds'},
+  { value: "6", info:'superman', label:'', add:'minutes'},
   { value: "7", info:'overhead_press', label:'', add:'kg'},
   { value: "8", info:'flate_knee_raise', label:'', add:'kg'},
   { value: "9", info:'russian_twist', label:'', add:'kg'},
@@ -42,6 +43,7 @@ const exerciseOptions = [
   { value: "22", info:'bicep_curl_barbell', label:'', add:'kg'},
   { value: "23", info:'reverse_curl_dumbbell', label:'', add:'kg'},
   { value: "24", info:'stretching', label:'', add:'minutes'},
+  { value: "25", info:'swimmer', label:'', add:'minutes'},
 
 
   // Add more options as needed
@@ -59,14 +61,14 @@ translatedExerciseOptions.sort((a, b) => a.label.localeCompare(b.label));
 
 
 const executions = ref<Exercise[]>([
-  { typeOfExercise: null, set: null, repetition: null, kg: null, seconds: null, minutes: null }
+  { typeOfExercise: null, set: 1, repetition: null, kg: null, seconds: null, minutes: null }
 ]);
 
 const addExecution = async () => {
 
   const lastExecution = executions.value[executions.value.length - 1];
   if (lastExecution.set !== null && lastExecution.repetition !== null && lastExecution.typeOfExercise !== null || lastExecution.seconds !== null || lastExecution.minutes !== null) { 
-    executions.value.push({ set: 1, repetition: null, kg: null, typeOfExercise: null, seconds: null, minutes:null });
+    executions.value.push({ set: 1, repetition: null, kg: null, typeOfExercise: null, seconds: null, minutes: null });
   }
 };
 
@@ -110,51 +112,57 @@ defineExpose({ executions });
         </div>
 
         <div class="execution-item" v-if="execution.typeOfExercise !== null">
-            <UInput 
-              type="number"  
-              v-model="execution.set" 
-              placeholder="set" 
-              class="w-[60px] sm:w-[80px]"/>
+          <UInputNumber 
+            type="number"  
+            v-model="execution.set" 
+            placeholder="set" 
+            :min="1"
+            :default-value="1"
+            class="w-[100px]"/>
 
-            <UInput  
-              v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'kg'"
-              type="number" 
-              v-model="execution.repetition" 
-              placeholder="reps" 
-              class="w-[60px] sm:w-[80px]"/>
+          <UInput  
+            v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'kg'"
+            type="number" 
+            v-model="execution.repetition"
+            inputmode="numeric" pattern="[0-9]*"
+            placeholder="reps" 
+            class="w-[60px] sm:w-[80px]"/>
 
-            <UInput 
-              v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'kg'"
-              type="number" 
-              v-model="execution.kg" 
-              @keyup.enter="addExecution"
-              placeholder="kg"
-              class="w-[60px] sm:w-[80px]"
-            />
+          <UInput 
+            v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'kg'"
+            type="number" 
+            inputmode="numeric" pattern="[0-9]*"
+            v-model="execution.kg" 
+            @keyup.enter="addExecution"
+            placeholder="kg"
+            class="w-[60px] sm:w-[80px]"
+          />
 
-            <UInput 
-              v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'seconds'"
-              type="number" 
-              v-model="execution.seconds" 
-              @keyup.enter="addExecution"
-              placeholder="sec"
-              class="w-[60px] sm:w-[80px]"
-            />
+          <UInput 
+            v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'seconds'"
+            type="number" 
+            inputmode="numeric" pattern="[0-9]*"
+            v-model="execution.seconds" 
+            @keyup.enter="addExecution"
+            placeholder="sec"
+            class="w-[60px] sm:w-[80px]"
+          />
 
-            <UInput 
-              v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'minutes'"
-              type="number" 
-              v-model="execution.minutes" 
-              @keyup.enter="addExecution"
-              placeholder="min"
-              class="w-[60px] sm:w-[80px]"
-            />
+          <UInput 
+            v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'minutes'"
+            type="number" 
+            inputmode="numeric" pattern="[0-9]*"
+            v-model="execution.minutes" 
+            @keyup.enter="addExecution"
+            placeholder="min"
+            class="w-[60px] sm:w-[80px]"
+          />
             
-            <UButton v-if="index === executions.length - 1 && (execution.set !== null && (execution.repetition !== null || execution.seconds !== null || execution.minutes !== null))" @click="addExecution">
-              <Icon name="i-lucide-plus" class="icon" />
-            </UButton>
+          <UButton v-if="index === executions.length - 1 && (execution.set !== null && (execution.repetition !== null || execution.seconds !== null || execution.minutes !== null))" @click="addExecution">
+            <Icon name="i-lucide-plus" class="icon" />
+          </UButton>
 
-          </div>
+        </div>
 
       </div>
     </div>

@@ -64,6 +64,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.typeOfExercise22':'Bicep Curl (Barbell)',
       'workout.typeOfExercise23':'Reverse Curl (Dumbbell)',
       'workout.typeOfExercise24':'Stretching',
+      'workout.typeOfExercise25':'Swimmer',
 
     };
     return translations[key] || key;
