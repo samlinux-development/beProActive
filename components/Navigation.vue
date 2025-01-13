@@ -19,7 +19,7 @@ const router = useRouter();
 
 let iicanisterId = config.public.network === 'local'
   ? `http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943`
-  : 'https://identity.ic0.app';
+  : 'https://identity.internetcomputer.org';
 
 onMounted(async () => {
   // Check if the user is already logged in
