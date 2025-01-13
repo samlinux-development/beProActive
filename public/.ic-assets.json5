@@ -6,6 +6,10 @@
       "Cross-Origin-Opener-Policy": "same-origin",
       "Content-Security-Policy": "frame-src *; frame-ancestors 'self'"
     }
+  },
+  {
+      "match": ".well-known",
+      "ignore": false
   }
 ]
 
