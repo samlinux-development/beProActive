@@ -80,7 +80,7 @@ const logout = async () => {
 </script>
 
 <template>
-  <nav class="navigation">
+  <nav class="navigation sticky-top">
     <ol>
       <div class="left-nav">
         <li v-for="(item, index) in nav" :key="index">
@@ -132,6 +132,12 @@ const logout = async () => {
     background-color: #f8f9fa;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .sticky-top {
+    position: sticky;
+    top: 0;
   }
 
   ol {

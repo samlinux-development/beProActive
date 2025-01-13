@@ -26,7 +26,7 @@ export default defineNuxtConfig({
     }
   },
 
-  modules: ['@nuxt/icon', '@nuxt/image','@nuxt/ui'],
+  modules: ['@nuxt/icon', '@nuxt/image', '@nuxt/ui', '@vite-pwa/nuxt'],
   css: ['~/assets/css/main.css'],
   colorMode: {
     preference: 'light'
@@ -35,9 +35,37 @@ export default defineNuxtConfig({
     dir: 'static', 
     staticFilename: '/[name]-[hash][ext]'
   },
+  pwa: {
+    manifest: {
+      name: "be ProActive",
+      short_name: "be ProActive",
+      description: "This dApp helps you to track your daily workouts and share them with the community. It is a decentralized application (dApp) built on the Internet Computer.",
+      start_url: "/",
+      display: "fullscreen",
+      background_color: "#ffffff",
+      theme_color: "#007bff",
+      icons: [
+        {
+          "src": "/beActive.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "/beActive.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    },
+    workbox: {
+      globDirectory: "/Users/rbole/Sites/workout/.output/public",
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+      globIgnores: []
+    }
+  },
   app: {
     head: {
-      title: 'Be ProActive - IcAcademy ',
+      title: 'Be ProActive',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' },
@@ -53,11 +81,21 @@ export default defineNuxtConfig({
         { hid: 'twitter:title', property: 'twitter:title', content: text0 },
         { hid: 'twitter:description', property: 'twitter:description', content: text1 },
         { hid: 'twitter:image', property: 'twitter:image', content: image },
+        { name: 'mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }
+
 
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'manifest', href:'/manifest.webmanifest' },
+        { rel: 'apple-touch-icon', href: 'beActive.png' }
       ]
+    }
+  },
+  vite: {
+    build: {
+      chunkSizeWarningLimit: 1000 // Set your desired limit in KB
     }
   }
 })

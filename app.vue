@@ -2,6 +2,7 @@
   import 'assets/css/app.css';
 </script>
 <template>
+  <NuxtPwaManifest />
   <UApp>
     <div class="app">
       <Navigation />
