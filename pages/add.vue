@@ -48,7 +48,7 @@ interface Exercise {
         return { set, repetition, typeOfExercise, kg, seconds };
       });
       
-      await actor.addWorkout(executionList);
+      await actor.addWorkout({duration:0, exercises:executionList});
       
       // reset the execution list
       executionListRef = ref(null);

@@ -22,10 +22,14 @@
         
       const actor = await $getActor({}, true);
       const result = await actor.getWorkoutsPerPrincipal();
-      const identity = await getIdentity();
+      if(result.length === 0) {
+        isLoading.value = false;
+        return;
+      }
 
-      workouts.value = result.workouts ;
-      workoutsTotal.value = result.workouts.length; 
+      const identity = await getIdentity();
+      workouts.value = result;
+      workoutsTotal.value = result.length; 
       // sort the push-ups by date
       workouts.value.sort((a, b) => Number(b.date) - Number(a.date));
 

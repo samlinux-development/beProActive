@@ -1,28 +1,76 @@
+type WorkoutsPerUserResponse = 
+ record {
+   date: Time;
+   duration: Time;
+   exercises: vec Exercise;
+ };
+type WorkoutPayload = 
+ record {
+   duration: Time;
+   exercises: vec Exercise;
+ };
 type Workout = 
  record {
    date: Time;
+   duration: Time;
    exercises: vec Exercise;
-   user: principal;
  };
 type Time = int;
 type Main = 
  service {
-   addWorkout: (vec Exercise) -> (bool);
+   addFriend: (principal) -> (bool);
+   addWorkout: (WorkoutPayload) -> (bool);
    createUserProfile: () -> (bool);
-   getPublicWorkouts: () -> (FetchWorkoutResponsePublic) query;
-   getWorkoutsPerPrincipal: () -> (FetchWorkoutResponse) query;
+   getAllWorkouts: () ->
+    (vec record {
+           principal;
+           record {workouts: vec record {
+                                   nat;
+                                   Workout;
+                                 };};
+         }) query;
+   getLatestWorkouts: () -> (vec record {
+                                   nat;
+                                   LatestWorkouts;
+                                 }) query;
+   getPublicReports: () -> (GetPublicReportsResponse) query;
+   getUserFeed: () -> (vec record {
+                             principal;
+                             Feed;
+                           }) query;
+   getUserProfile: () -> (GetUserProfileResponse) query;
+   getWorkoutReports: (nat16) -> (GetWorkoutReportsResponse) query;
+   getWorkoutsPerPrincipal: () -> (vec WorkoutsPerUserResponse) query;
+   removeFriend: (principal) -> (bool);
    setMaxPublicWorkouts: (nat) -> (bool);
+   updateProfile: (text) -> (bool);
  };
-type FetchWorkoutResponsePublic = 
+type LatestWorkouts = 
  record {
-   totalUsers: nat;
-   totalWorkouts: nat;
-   workouts: vec Workout;
+   alias: text;
+   date: Time;
+   exercises: vec Exercise;
  };
-type FetchWorkoutResponse = 
+type GetWorkoutReportsResponse = 
  record {
+   totalExercises: nat;
+   totalRepsPerExercise: nat16;
+   totalSetsPerExercise: nat16;
    totalWorkouts: nat;
-   workouts: vec Workout;
+ };
+type GetUserProfileResponse = 
+ record {
+   alias: text;
+   friends: vec principal;
+ };
+type GetPublicReportsResponse = record {totalUsers: nat;};
+type Feed = 
+ record {
+   alias: text;
+   workouts: vec record {
+                   nat;
+                   Workout;
+                 };
  };
 type Exercise = 
  record {

@@ -1,28 +1,35 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useNuxtApp } from '#app'
-import { type Workout } from '../src/declarations/backend/backend.did.js';
-import { splitPrincipalID, formatDate, replaceCount } from '../utils/helper';
+import { replaceCount, formatDate } from '../utils/helper';
 
+import { type LatestWorkouts } from '../src/declarations/backend/backend.did.d';
 const { $translate, $getActor } = useNuxtApp();
 
-const workouts = ref<Workout[]>([]);
-const totalUsers = ref<number>(0);
-
 const isLoading = ref(true);
+const totalWorkouts = ref<number>(0);
+const totalUsers = ref<number>(0);
+const latestWorkouts = ref<Array<LatestWorkouts>>([]);
 
 onMounted(async () => {
   try {
     const actor = await $getActor({},true);
-    const result = await actor.getPublicWorkouts();
-    //console.log(result.workouts);
-    workouts.value = result.workouts;
-    totalUsers.value = result.totalUsers;
+    const result = await actor.getPublicReports();
+    const result2 = await actor.getLatestWorkouts();
 
-    // sort the push-ups by date
-    workouts.value.sort((a, b) => Number(b.date) - Number(a.date));
+    // create a new latestWorkouts array
+    latestWorkouts.value = result2.map((workout:any) => {
+      return workout[1];
+    });
+
+    // sort the workouts by date
+    latestWorkouts.value.sort((a:any, b:any) => Number(b.date) - Number(a.date));
+
+    totalWorkouts.value = Number(result.totalWorkouts);
+    totalUsers.value = Number(result.totalUsers);
 
     isLoading.value = false;
+
   } catch (error) {
     console.error("Error fetching workouts:", error);
     // Handle the error gracefully, e.g., display an error message to the user
@@ -34,41 +41,40 @@ onMounted(async () => {
   <div>
     <h1>{{$translate('index.title')}}</h1>
     <div class="hello">
-      {{ replaceCount($translate('index.hello'),'__count__', workouts.length) }}
+      {{ $translate('index.hello')}}
     </div>
     <div class="hello">
       {{ replaceCount($translate('index.hello2'),'__totalUsers__', totalUsers) }}
     </div>
+    <div>
+      <h2>{{ $translate('workout.list-title') }}</h2>
+      <div v-if="isLoading"> <Spinner /> </div>
+      <ol>
+        <li v-for="(workout, index) in latestWorkouts" :key="index" class="workout-item">
+        
+          <div class="workout-details">
+            <span class="workout-date">{{ $translate ('workout.at') }} {{ formatDate(workout.date) }} {{ $translate ('workout.by') }} {{ workout.alias }} </span> 
+            
+            <div v-if="workout.exercises && workout.exercises.length > 0" class="execution-details">
+              <h3>{{ $translate('workout.executionDetails') }}</h3>
+              <ul>
+                <Exercise v-for="(exercise, index) in workout.exercises" :key="index" :exercise="exercise" />
+              </ul>
+            </div>
 
-    <h1>{{ $translate('workout.list-title') }}</h1>
-    
-    <div v-if="isLoading"> <Spinner /> </div>
-    <div v-else-if="workouts.length === 0">{{ $translate ('workout.list-empty') }}</div>
-    <ol v-else class="workout-list">
-      <li v-for="(workout, index) in workouts" :key="index" class="workout-item">
-       
-        <div class="workout-details">
-          <span class="workout-user">{{ $translate ('workout.by') }} {{ splitPrincipalID(workout.user.toString()) }}</span>
-          <span class="workout-date">{{ $translate ('workout.at') }} {{ formatDate(workout.date) }}</span>
-          
-          <div v-if="workout.exercises && workout.exercises.length > 0" class="execution-details">
-            <h3>{{ $translate('workout.executionDetails') }}</h3>
-            <ul>
-              <Exercise 
-                v-for="(exercise, index) in workout.exercises" 
-                :key="index" 
-                :exercise="exercise" 
-                />
-            </ul>
           </div>
-
-        </div>
-      </li>
-    </ol>
+        </li>
+      </ol>
+    </div>
   </div>
 </template>
 
 <style scoped>
+  
+  ol {
+    padding-left: 0px;
+  }
+  
   .workout-list {
     list-style-type: none;
     padding: 0;
@@ -117,5 +123,5 @@ onMounted(async () => {
     color: #333;
     margin-left: 0.5rem;
   }
-</style>
 
+</style>

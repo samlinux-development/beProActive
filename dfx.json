@@ -2,13 +2,7 @@
   "canisters": {
     "backend": {
       "main": "backend/main.mo",
-      "type": "motoko",
-      "metadata": [
-        {
-          "name": "candid:service",
-          "visibility": "private"
-        }
-      ]
+      "type": "motoko"
     },
    
     "frontend": {

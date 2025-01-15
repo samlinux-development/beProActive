@@ -7,7 +7,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     const translations: { [key: string]: string } = {
       'index.title': 'Be ProActive',
-      'index.hello': 'Check out the newest workout warriors crushing their fitness goals! 💪 Are you ready to join the leaderboard with your own epic sessions? Let’s keep the momentum going! 🚀',
+      'index.hello': 'Check out the newest workout warriors crushing their fitness goals! 💪 Are you ready to join the leaderboard with your own epic sessions?',
       'index.hello2': 'Help to grow the community by sharing your workout achievements! Train with __totalUsers__ other fitness enthusiasts and inspire each other to reach new heights! 🏋️‍♂️',
       'workout.title': 'Add new workout',
       'workout.count': 'Workout performed',

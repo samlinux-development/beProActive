@@ -5,7 +5,21 @@ import Time "mo:base/Time";
 import Principal "mo:base/Principal";
 
 module {
-  public type Counter = Nat ;
+  
+  public type WorkoutPayload = {
+    duration: Time.Time;
+    exercises : [Exercise];
+  };
+
+  public type WorkoutToStore = {
+    workouts : Map.Map<Nat,Workout>;
+  };
+
+  public type Workout = {
+    date: Time.Time;
+    duration: Time.Time;
+    exercises : [Exercise];
+  }; 
 
   public type Exercise = {
     //nat16 = 0-65535
@@ -16,21 +30,22 @@ module {
     seconds: Nat;
   };
 
-  public type Workout = {
-    user : Principal;
-    date : Time.Time;
-    exercises : [Exercise];
-  }; 
-
   public type User = {
     alias : Text;
+    friends : Map.Map<Principal,Text>;
+  };
+
+  public type LatestWorkouts = {
+    alias: Text;
+    date: Time.Time;
+    exercises : [Exercise];
   };
 
   public type State = {
-    var counter: Counter;
     var maxPublicWorkouts: Nat;
-    var map: Map.Map<Nat, Workout>;
+    var map: Map.Map<Principal, WorkoutToStore>;
     var users: Map.Map<Principal, User>;
+    var latestWorkouts: Map.Map<Nat, LatestWorkouts>;
   };
 
 }
