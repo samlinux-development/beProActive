@@ -46,7 +46,7 @@ shared ({ caller = creator }) actor class Main () {
   // get all public reports
   public query func getPublicReports(): async Types.GetPublicReportsResponse{
     let users = Map.size(state.users);
-    
+
     {
       totalUsers = users;
     }
@@ -243,5 +243,16 @@ shared ({ caller = creator }) actor class Main () {
       };
     }
   };  
+
+  // get all users
+  public shared query ({caller}) func getAllUsers(): async [(Principal,Text)] {
+    if(Principal.isAnonymous(caller)) {return []};
+
+    let buffer = Buffer.Buffer<(Principal, Text)>(1);
+    for ((key, value) in Map.entries(state.users)) {
+      buffer.add((key, value.alias));
+    };
+    Buffer.toArray(buffer);
+  };
     
 }

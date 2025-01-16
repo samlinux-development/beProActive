@@ -45,6 +45,11 @@ export const idlFactory = ({ IDL }) => {
     'addFriend' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'addWorkout' : IDL.Func([WorkoutPayload], [IDL.Bool], []),
     'createUserProfile' : IDL.Func([], [IDL.Bool], []),
+    'getAllUsers' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Text))],
+        ['query'],
+      ),
     'getAllWorkouts' : IDL.Func(
         [],
         [

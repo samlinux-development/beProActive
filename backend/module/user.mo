@@ -2,6 +2,7 @@ import V0_1_0 "../migrations/00-01-00-initial/types";
 import MigrationTypes "../migrations/types";
 import Map "mo:map/Map";
 import { phash } "mo:map/Map";
+import Helper "helper";
 
 module {
 
@@ -65,7 +66,7 @@ module {
   public func createUserProfile(caller:Principal, users: Map.Map<Principal, V0_1_0.User> ): async Bool {
     if (Map.has(users, phash, caller) == false) {
       let user: StateTypes.User = {
-        alias = "";
+        alias = Helper.getAliasFromPrincipal(caller);
         friends = Map.new<Principal, Text>();
       };
       Map.set(users, phash, caller, user);

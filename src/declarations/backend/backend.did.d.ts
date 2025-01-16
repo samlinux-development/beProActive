@@ -33,6 +33,7 @@ export interface Main {
   'addFriend' : ActorMethod<[Principal], boolean>,
   'addWorkout' : ActorMethod<[WorkoutPayload], boolean>,
   'createUserProfile' : ActorMethod<[], boolean>,
+  'getAllUsers' : ActorMethod<[], Array<[Principal, string]>>,
   'getAllWorkouts' : ActorMethod<
     [],
     Array<[Principal, { 'workouts' : Array<[bigint, Workout]> }]>

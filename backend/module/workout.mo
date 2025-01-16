@@ -11,6 +11,8 @@ import Iter "mo:base/Iter";
 import Text "mo:base/Text";
 //import Debug "mo:base/Debug";
 import Array "mo:base/Array";
+import Helper "helper";
+
 
 module {
   let StateTypes = MigrationTypes.Current;
@@ -124,9 +126,7 @@ module {
       case (?u) {
         switch (u.alias) {
           case ("") {
-            let a = Principal.toText(principal);
-            let b = Iter.toArray(Text.split(a, #char('-')));
-            return b[0];
+            return Helper.getAliasFromPrincipal(principal);
           };
           case (alias) {
             return alias;
@@ -134,9 +134,7 @@ module {
         };
       };
       case (null) {
-        let a = Principal.toText(principal);
-        let b = Iter.toArray(Text.split(a, #char('-')));
-        return b[0];
+        return Helper.getAliasFromPrincipal(principal);
       };
     };
   };

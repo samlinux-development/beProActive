@@ -21,6 +21,10 @@ type Main =
    addFriend: (principal) -> (bool);
    addWorkout: (WorkoutPayload) -> (bool);
    createUserProfile: () -> (bool);
+   getAllUsers: () -> (vec record {
+                             principal;
+                             text;
+                           }) query;
    getAllWorkouts: () ->
     (vec record {
            principal;
