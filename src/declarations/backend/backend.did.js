@@ -28,6 +28,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const GetUserProfileResponse = IDL.Record({
     'alias' : IDL.Text,
+    'totalWorkouts' : IDL.Nat,
     'friends' : IDL.Vec(IDL.Principal),
   });
   const GetWorkoutReportsResponse = IDL.Record({

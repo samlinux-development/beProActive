@@ -91,14 +91,28 @@ module {
   };
 
   // get users profile
-  public func getUserProfile(caller:Principal, users: Map.Map<Principal, StateTypes.User>): Types.GetUserProfileResponse {
+  public func getUserProfile(
+    caller:Principal, 
+    users: Map.Map<Principal, StateTypes.User>,
+    map: Map.Map<Principal, StateTypes.WorkoutToStore>
+    ): Types.GetUserProfileResponse {
    
     switch (Map.get(users, phash, caller)) {
       case (?u) {
-        { alias = u.alias; friends = Iter.toArray(Map.keys(u.friends)) }
+        // find principal and get size of workouts
+        let totalWorkouts:Nat = switch (Map.get(map, phash, caller)) {
+          case (?w) {
+            Map.size(w.workouts);
+          };
+          case (null) {
+            0;
+          };
+        };
+
+        { alias = u.alias; friends = Iter.toArray(Map.keys(u.friends)); totalWorkouts = totalWorkouts}
       };
       case (null) {
-        { alias = ""; friends = [] }
+        { alias = ""; friends = []; totalWorkouts = 0 }
       };
     }
   }; 

@@ -26,6 +26,7 @@ module {
   public type GetUserProfileResponse = {
     alias: Text;
     friends: [Principal];
+    totalWorkouts: Nat;
   };
   
   public type Feed = {

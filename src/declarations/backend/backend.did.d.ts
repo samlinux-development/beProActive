@@ -16,6 +16,7 @@ export interface Feed {
 export interface GetPublicReportsResponse { 'totalUsers' : bigint }
 export interface GetUserProfileResponse {
   'alias' : string,
+  'totalWorkouts' : bigint,
   'friends' : Array<Principal>,
 }
 export interface GetWorkoutReportsResponse {
