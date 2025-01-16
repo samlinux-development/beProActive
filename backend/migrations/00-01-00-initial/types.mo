@@ -3,6 +3,7 @@ import Nat "mo:base/Nat";
 import Nat16 "mo:base/Nat16";
 import Time "mo:base/Time";
 import Principal "mo:base/Principal";
+import Text "mo:base/Text";
 
 module {
   
@@ -39,6 +40,11 @@ module {
     alias: Text;
     date: Time.Time;
     exercises : [Exercise];
+  };
+
+  public type Like = {
+    alias: Text;
+    principal: Principal;
   };
 
   public type State = {

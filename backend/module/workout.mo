@@ -11,6 +11,7 @@ import Iter "mo:base/Iter";
 import Text "mo:base/Text";
 import Array "mo:base/Array";
 import Buffer "mo:base/Buffer";
+
 import Helper "helper";
 
 module {
@@ -30,6 +31,7 @@ module {
       switch (wOpt) {
         case (?w) {
           // add new workout
+
           let newWorkout:StateTypes.Workout = {
             date = Time.now();
             duration = workout.duration;
@@ -54,6 +56,7 @@ module {
     else {
       // create a new workout map
       let w  = Map.new<Nat, StateTypes.Workout>();
+
       let newWorkout:StateTypes.Workout = {
         date = Time.now();
         duration = workout.duration;
@@ -190,7 +193,11 @@ module {
       switch (wOpt) {
         case (?w) {
           for (value in Map.vals(w.workouts)) {
-            buffer.add(value);
+            buffer.add({
+              date = value.date;
+              duration = value.duration;
+              exercises = value.exercises;
+            });
           };
         };
         case (null) {
@@ -220,4 +227,5 @@ module {
     Buffer.toArray(buffer);
   };
 
+  
 }

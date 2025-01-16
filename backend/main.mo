@@ -12,7 +12,6 @@ import Map "mo:map/Map";
 import User "module/user";
 import Workout "module/workout";
 
-
 shared ({ caller = creator }) actor class Main () {
   
   let StateTypes = MigrationTypes.Current;
@@ -135,5 +134,4 @@ shared ({ caller = creator }) actor class Main () {
     if(Principal.isAnonymous(caller)) {return []};
     User.getAllUsers(state.users);
   };
-    
 }

@@ -18,8 +18,14 @@ module {
     let user = Map.get(users, phash, caller);
     switch (user) {
       case (?u) {
+        let updatedAlias = if (alias == "") {
+            Helper.getAliasFromPrincipal(caller)
+          } else {
+            alias
+          };
+
         let updatedUser:StateTypes.User = {
-          alias = alias;
+          alias = updatedAlias;
           friends = u.friends;
         };
         Map.set(users, phash, caller, updatedUser);

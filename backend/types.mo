@@ -10,13 +10,13 @@ module {
     totalSetsPerExercise:Nat16; 
     totalRepsPerExercise:Nat16; 
     totalWorkouts:Nat; 
-    totalExercises:Nat
+    totalExercises:Nat;
   };
 
   public type WorkoutsPerUserResponse = {
     date : Time.Time; 
     duration : Time.Time; 
-    exercises : [StateTypes.Exercise]
+    exercises : [StateTypes.Exercise];
   };
 
   public type GetPublicReportsResponse = {
