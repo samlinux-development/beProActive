@@ -1,5 +1,5 @@
-//import V0_1_0 "../migrations/00-01-00-initial/types";
 import MigrationTypes "../migrations/types";
+import Types "../types";
 
 import Map "mo:map/Map";
 import { phash } "mo:map/Map";
@@ -9,10 +9,9 @@ import Time "mo:base/Time";
 import Principal "mo:base/Principal";
 import Iter "mo:base/Iter";
 import Text "mo:base/Text";
-//import Debug "mo:base/Debug";
 import Array "mo:base/Array";
+import Buffer "mo:base/Buffer";
 import Helper "helper";
-
 
 module {
   let StateTypes = MigrationTypes.Current;
@@ -138,4 +137,87 @@ module {
       };
     };
   };
+
+  // get workout reports for principal
+  public func getWorkoutReports(
+    caller:Principal, 
+    typeOfExercise:Nat16, 
+    map: Map.Map<Principal, StateTypes.WorkoutToStore>): Types.GetWorkoutReportsResponse{
+    if(Principal.isAnonymous(caller)) {
+      return {totalSetsPerExercise=0; totalRepsPerExercise=0; totalWorkouts=0; totalExercises=0};
+    };
+
+    // get user workouts
+    let workouts = Map.get(map, phash, caller);
+
+    var reps:Nat16 = 0;
+    var sets:Nat16 = 0;
+    var totalWorkouts:Nat = 0;
+    var totalExercises:Nat = 0;
+    switch (workouts) {
+      case (null) {
+        //Debug.print("Workout not found");
+      };
+      case (?w) {
+        // loop over the exercies of a workout
+        totalWorkouts := Map.size(w.workouts);
+        for (workout in Map.vals(w.workouts)) {
+          totalExercises := totalExercises + Iter.size(Iter.fromArray(workout.exercises));
+          for (exercise in Iter.fromArray(workout.exercises)) {
+            if (exercise.typeOfExercise == typeOfExercise) {
+              sets := sets + 1;
+              reps := reps + exercise.repetition;
+              //Debug.print("Workout found");
+            };
+          };
+        };
+      };
+    };
+    {
+      totalSetsPerExercise=sets;
+      totalRepsPerExercise=reps;
+      totalWorkouts=totalWorkouts;
+      totalExercises=totalExercises;
+    };
+  };
+
+  // get all workouts per principal
+  public func getWorkoutsPerPrincipal(caller:Principal, map: Map.Map<Principal, StateTypes.WorkoutToStore>): [Types.WorkoutsPerUserResponse]{
+
+    let buffer = Buffer.Buffer<(Types.WorkoutsPerUserResponse)>(1);
+    if (Map.contains(map, phash, caller) == ?true){
+      let wOpt = Map.get(map, phash, caller);
+      switch (wOpt) {
+        case (?w) {
+          for (value in Map.vals(w.workouts)) {
+            buffer.add(value);
+          };
+        };
+        case (null) {
+          //Debug.print("Workout not found");
+        };
+      };
+     };
+    Buffer.toArray(buffer);
+  };
+
+  // get all workouts
+  public func getAllWorkouts(map: Map.Map<Principal, StateTypes.WorkoutToStore>): [(Principal, {workouts: [(Nat, StateTypes.Workout)]})]{
+    let buffer = Buffer.Buffer<(Principal, {workouts: [(Nat, StateTypes.Workout)]})>(1);
+    for ((key, value) in Map.entries(map)) {
+      let workoutsArray = Map.toArray(value.workouts);
+      buffer.add((key, {workouts = workoutsArray}));
+    };
+    Buffer.toArray(buffer);
+  };
+
+  // get latest workouts
+  public func getLatestWorkouts(latestWorkouts:Map.Map<Nat,StateTypes.LatestWorkouts>): [(Nat, StateTypes.LatestWorkouts)]{
+    let buffer = Buffer.Buffer<(Nat,StateTypes.LatestWorkouts)>(1);
+    for ((key, value) in Map.entries(latestWorkouts)) {
+      buffer.add((key,value));
+    };
+    Buffer.toArray(buffer);
+  };
+
 }

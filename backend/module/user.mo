@@ -1,7 +1,12 @@
-import V0_1_0 "../migrations/00-01-00-initial/types";
+import Types "../types";
 import MigrationTypes "../migrations/types";
+
 import Map "mo:map/Map";
 import { phash } "mo:map/Map";
+import Buffer "mo:base/Buffer";
+import Iter "mo:base/Iter";
+import Principal "mo:base/Principal";
+
 import Helper "helper";
 
 module {
@@ -9,7 +14,7 @@ module {
   let StateTypes = MigrationTypes.Current;
 
   // update profile data
-  public func updateProfile(caller:Principal, alias:Text, users: Map.Map<Principal, V0_1_0.User>):async Bool {
+  public func updateProfile(caller:Principal, alias:Text, users: Map.Map<Principal, StateTypes.User>):async Bool {
     let user = Map.get(users, phash, caller);
     switch (user) {
       case (?u) {
@@ -27,7 +32,7 @@ module {
   };
 
   // remove friend
-  public func removeFriend(caller:Principal, friend:Principal, users: Map.Map<Principal, V0_1_0.User>):async Bool {
+  public func removeFriend(caller:Principal, friend:Principal, users: Map.Map<Principal, StateTypes.User>):async Bool {
     // Get the caller's friends
     switch (Map.get(users, phash, caller)) {
       case (?f) {
@@ -45,7 +50,7 @@ module {
   };
 
   // add friend
-  public func addFriend(caller:Principal, friend:Principal, users: Map.Map<Principal, V0_1_0.User>):async Bool {
+  public func addFriend(caller:Principal, friend:Principal, users: Map.Map<Principal, StateTypes.User>):async Bool {
     // Get the caller's friends
     switch (Map.get(users, phash, caller)) {
       case (?f) {
@@ -63,7 +68,7 @@ module {
   };
 
   // create user profile
-  public func createUserProfile(caller:Principal, users: Map.Map<Principal, V0_1_0.User> ): async Bool {
+  public func createUserProfile(caller:Principal, users: Map.Map<Principal, StateTypes.User> ): async Bool {
     if (Map.has(users, phash, caller) == false) {
       let user: StateTypes.User = {
         alias = Helper.getAliasFromPrincipal(caller);
@@ -76,4 +81,79 @@ module {
     return false;
   };
   
+  // get all users
+  public func getAllUsers(users: Map.Map<Principal, StateTypes.User>): [(Principal,Text)] {
+    let buffer = Buffer.Buffer<(Principal, Text)>(1);
+    for ((key, value) in Map.entries(users)) {
+      buffer.add((key, value.alias));
+    };
+    Buffer.toArray(buffer);
+  };
+
+  // get users profile
+  public func getUserProfile(caller:Principal, users: Map.Map<Principal, StateTypes.User>): Types.GetUserProfileResponse {
+   
+    switch (Map.get(users, phash, caller)) {
+      case (?u) {
+        { alias = u.alias; friends = Iter.toArray(Map.keys(u.friends)) }
+      };
+      case (null) {
+        { alias = ""; friends = [] }
+      };
+    }
+  }; 
+
+  // get users feed
+  public func getUserFeed(
+    caller:Principal, 
+    users: Map.Map<Principal, StateTypes.User>,
+    map: Map.Map<Principal, StateTypes.WorkoutToStore>): [(Principal, Types.Feed)]{
+
+    // get users friends
+    let friends = Map.get(users, phash, caller);
+    //Debug.print("Friends: "#debug_show(friends));
+    
+    // get friends workouts
+    var feed: Map.Map<Principal, Types.Feed> = Map.new<Principal, Types.Feed>();
+
+    switch (friends) {
+      case (?f) {
+        for (friend in Map.keys(f.friends)){
+          //Debug.print("Friend: "#Principal.toText(friend));
+          // get alias from every friend
+          let friendProfile = Map.get(users, phash, friend);
+          
+          let workouts = Map.get(map, phash, friend);
+         
+          switch (workouts) {
+            case (?w) {
+              let a = {
+                alias = switch (friendProfile) {
+                  case (?profile) profile.alias;
+                  case (null) {
+                    Helper.getAliasFromPrincipal(friend);
+                  };
+                };
+                workouts = Map.toArray(w.workouts);
+              };
+              Map.set(feed, phash, friend, a);
+            };
+            case (null) {
+              //Debug.print("No workouts found for friend");
+            };
+          };
+        };
+      };
+      case (null) {
+        //Debug.print("No friends found");
+      };
+    };
+
+    // prepare the output for the users feed 
+    let buffer = Buffer.Buffer<(Principal, Types.Feed)>(1);
+    for ((key, value) in Map.entries(feed)) {
+      buffer.add((key, {alias=value.alias; workouts = value.workouts}));
+    };
+    Buffer.toArray(buffer);  
+  }; 
 };
