@@ -6,11 +6,11 @@ const { $translate } = useNuxtApp();
   <h1>{{ $translate ('about.title') }}</h1>
   <img class="image" src="/beActive.webp" alt="Be Active"/>
   <div>{{ $translate ('about.info') }}</div>
-  <div>
+  <!-- <div>
     <a href="https://github.com/samlinux-development/beProActive" target="_blank" rel="noopener noreferrer">
       {{ $translate ('about.github') }}
     </a>
-  </div>
+  </div> -->
   <div v-html="$translate ('about.stayTuned')"></div>
 </template>
 
