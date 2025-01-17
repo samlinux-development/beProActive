@@ -18,7 +18,7 @@
   const friends = ref<[]>([]);
   const totalWorkouts = ref<bigint>(0n);
   const isEditProfileFormDisabled = ref<boolean>(false);
-  const isFriendsSidebarLoagin = ref<boolean>(false);
+  const isFriendsSidebarLoading = ref<boolean>(false);
 
   const friendsSidebarSelectFriendItems = ref<{label: string, data: any}[]>([]);
 
@@ -56,9 +56,9 @@
 
       userDetailFormState.alias = user.value;
 
-      friends.value.forEach(function (friendData) {
+      friends.value.forEach(function (friendData: {alias: string}) {
         const friend = {
-          alias: friendData
+          alias: friendData.alias
         }
 
         testTableData.value.push(friend);
@@ -84,6 +84,7 @@
   });
 
   async function testFunct() {
+    isFriendsSidebarLoading.value = true;
     const actor = await $getActor({}, true);
     allUsers.value = await actor.getAllUsers();
     const userProfile = await actor.getUserProfile();
@@ -92,6 +93,12 @@
     let testAllUsers: any = [];
 
     allUsers.value.forEach(function(user) {
+      friends.value.forEach(function(friend: any) {
+        if (user[1] == friend.alias) {
+          console.log(user[1], 'Friend already added');
+        }
+      })  
+
       const testUser = {
         label: user[1],
         data: user[0]
@@ -101,6 +108,7 @@
     })
 
     friendsSidebarSelectFriendItems.value = testAllUsers;
+    isFriendsSidebarLoading.value = false;
   }
 
   async function onSubmitEditUser(event: FormSubmitEvent<{alias: string}>) {
@@ -117,7 +125,8 @@
     isEditProfileFormDisabled.value = false;
   }
 
-  async function onSubmitAddFriend(event: FormSubmitEvent<any>) {
+  async function addFriend(event: FormSubmitEvent<any>) {
+    isFriendsSidebarLoading.value = true;
     const actor = await $getActor({}, true);
     
     const newFriend = event.data.selectedUser;
@@ -125,15 +134,21 @@
     const res = await actor.addFriend(newFriend.data);
 
     console.log(res);
+    isFriendsSidebarLoading.value = false;
   }
 
   async function removeFriend(principalId: any) {
-    const actor = await $getActor({}, true);
-    const res = await actor.removeFriend(principalId);
+    isFriendsSidebarLoading.value = true;
 
-    console.log(res);
+    console.log(principalId);
 
-    // console.log('Test!', principalId);
+    isFriendsSidebarLoading.value = false;
+
+    
+    // const actor = await $getActor({}, true);
+    // const res = await actor.removeFriend(principalId);
+
+    // console.log(res);
   }
 
   const testColumns: TableColumn<TestFriend>[] = [
@@ -145,14 +160,20 @@
       // }
     },
     {
-      id: 'actions',
+      id: 'removeFriend',
       cell: ({ row }) => {
-        return h(UButton, {
-          icon: 'i-material-symbols:person-remove',
-          class: 'cursor-pointer',
-          variant: 'ghost',
-          onClick: () => {removeFriend(row.original.alias)}
-        });
+        console.log(row);
+
+        return h(
+          UModal, {
+            title: 'Modal title',
+            description: 'Modal desc'
+          },
+          () => h(UButton, {
+            icon: 'i-material-symbols:person-remove',
+            class: 'cursor-pointer'
+          })
+        )
       }
     }
   ];
@@ -204,35 +225,41 @@
                     class: 'cursor-pointer text-[25px]'
                   }"
                 >
-                  <div class="cursor-pointer font-bold" @click="testFunct">
+                  <UButton variant="outline" class="cursor-pointer font-bold" @click="testFunct">
                     {{ $translate('profile.your-friends') }} {{ friends.length }}
-                  </div>
+                  </UButton>
 
                   <template #body>
-                    <div class="mb-10">
-                      <UForm :state="userFriendsFormState" @submit="onSubmitAddFriend">
-                        <UFormField :label="$translate('profile.friends-sidebar-add-friend')">
-                          <USelectMenu 
-                            v-model="userFriendsFormState.selectedUser" 
-                            :items="friendsSidebarSelectFriendItems"
-                            :search-input="{icon: 'i-lucide-search'}"
-                            class="w-48"
-                          />
-                        </UFormField>
-
-                        <UButton type="submit">
-                          {{ $translate('profile.friends-sidebar-add-friend-button') }}
-                        </UButton>
-                      </UForm>                      
+                    <div v-if="isFriendsSidebarLoading">
+                      <Spinner />
                     </div>
 
-                    <div>
-                      <div>
-                        {{ $translate('profile.friends-sidebar-friend-list') }}
+                    <div v-else-if="!isFriendsSidebarLoading">
+                      <div class="mb-10">
+                        <UForm :state="userFriendsFormState" @submit="addFriend">
+                          <UFormField :label="$translate('profile.friends-sidebar-add-friend')">
+                            <USelectMenu 
+                              v-model="userFriendsFormState.selectedUser" 
+                              :items="friendsSidebarSelectFriendItems"
+                              :search-input="{icon: 'i-lucide-search'}"
+                              class="w-48"
+                            />
+                          </UFormField>
+
+                          <UButton type="submit">
+                            {{ $translate('profile.friends-sidebar-add-friend-button') }}
+                          </UButton>
+                        </UForm>                      
                       </div>
-                    
+
                       <div>
-                        <UTable :data="testTableData" :columns="testColumns" />
+                        <div>
+                          {{ $translate('profile.friends-sidebar-friend-list') }}
+                        </div>
+                      
+                        <div>
+                          <UTable :data="testTableData" :columns="testColumns" />
+                        </div>
                       </div>
                     </div>
                   </template>
