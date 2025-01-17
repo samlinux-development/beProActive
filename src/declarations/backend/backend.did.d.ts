@@ -13,11 +13,12 @@ export interface Feed {
   'workouts' : Array<[bigint, Workout]>,
   'alias' : string,
 }
+export interface Friend { 'principal' : Principal, 'alias' : string }
 export interface GetPublicReportsResponse { 'totalUsers' : bigint }
 export interface GetUserProfileResponse {
   'alias' : string,
   'totalWorkouts' : bigint,
-  'friends' : Array<Principal>,
+  'friends' : Array<Friend>,
 }
 export interface GetWorkoutReportsResponse {
   'totalSetsPerExercise' : number,
