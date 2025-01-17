@@ -30,12 +30,13 @@ module {
       let wOpt = Map.get(map, phash, caller);
       switch (wOpt) {
         case (?w) {
-          // add new workout
+          // add new workout to existing map
 
           let newWorkout:StateTypes.Workout = {
             date = Time.now();
             duration = workout.duration;
             exercises = workout.exercises;
+            likes = [var];
           };
 
           let newWorkoutCount:Nat = Map.size(w.workouts)+1;
@@ -61,6 +62,7 @@ module {
         date = Time.now();
         duration = workout.duration;
         exercises = workout.exercises;
+        likes = [var];
       };
       // store the new workout
       Map.set(w, nhash, 1, newWorkout);
