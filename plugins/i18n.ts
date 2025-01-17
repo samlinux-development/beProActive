@@ -47,7 +47,9 @@ export default defineNuxtPlugin((nuxtApp) => {
       'profile.edit-profile-sidebar-alias-input-label': 'Alias',
       'profile.friends-sidebar-title': 'Friends',
       'profile.friends-sidebar-add-friend': 'Add a friend',
+      'profile.friends-sidebar-add-friend-button': 'Add friend',
       'profile.friends-sidebar-friend-list': 'Friend list',
+      'profile.friends-sidebar-friend-list-header-alias': 'Alias',
 
       'workout.typeOfExercise0':'Choose exercise',
       'workout.typeOfExercise1':'Push ups',

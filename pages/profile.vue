@@ -3,7 +3,10 @@
   import { useNuxtApp } from '#app'
   import { type Workout } from '../src/declarations/backend/backend.did.js';
   import { isAuthenticated } from '../utils/helper';
-  import type { FormSubmitEvent } from '@nuxt/ui';
+  import type { FormSubmitEvent, TableColumn } from '@nuxt/ui';
+
+  const UButton = resolveComponent('UButton');
+  const UModal = resolveComponent('UModal');
 
   const { $translate, $getActor } = useNuxtApp();
   const workouts = ref<Workout[]>([]);
@@ -15,9 +18,9 @@
   const friends = ref<[]>([]);
   const totalWorkouts = ref<bigint>(0n);
   const isEditProfileFormDisabled = ref<boolean>(false);
+  const isFriendsSidebarLoagin = ref<boolean>(false);
 
-  const testItems = ref(['Test1', 'Test2', 'Test3']);
-  const testValue = ref(undefined);
+  const friendsSidebarSelectFriendItems = ref<{label: string, data: any}[]>([]);
 
   const allUsers = ref<[]>([]);
 
@@ -26,23 +29,14 @@
   });
 
   const userFriendsFormState = reactive({
-    selectedUser: ''
+    selectedUser: {label: '', data: {}}
   });
 
-  const testTableData = ref([
-    {
-      id: 1,
-      name: 'test1'
-    },
-    {
-      id: 2,
-      name: 'test2'
-    },
-    {
-      id: 3,
-      name: 'test3'
-    }
-  ]);
+  type TestFriend = {
+   alias: string 
+  }
+
+  const testTableData = ref<{alias: string}[]>([]);
 
   onMounted(async () => {
     try {
@@ -61,6 +55,14 @@
       totalWorkouts.value = result2.totalWorkouts;
 
       userDetailFormState.alias = user.value;
+
+      friends.value.forEach(function (friendData) {
+        const friend = {
+          alias: friendData
+        }
+
+        testTableData.value.push(friend);
+      })
 
       if(result.length === 0) {
         isLoading.value = false;
@@ -81,6 +83,26 @@
     }
   });
 
+  async function testFunct() {
+    const actor = await $getActor({}, true);
+    allUsers.value = await actor.getAllUsers();
+    const userProfile = await actor.getUserProfile();
+    friends.value = userProfile.friends;
+
+    let testAllUsers: any = [];
+
+    allUsers.value.forEach(function(user) {
+      const testUser = {
+        label: user[1],
+        data: user[0]
+      }
+
+      testAllUsers.push(testUser);
+    })
+
+    friendsSidebarSelectFriendItems.value = testAllUsers;
+  }
+
   async function onSubmitEditUser(event: FormSubmitEvent<{alias: string}>) {
     isEditProfileFormDisabled.value = true;
     const actor = await $getActor({}, true);
@@ -95,13 +117,46 @@
     isEditProfileFormDisabled.value = false;
   }
 
-  async function testFunct() {
+  async function onSubmitAddFriend(event: FormSubmitEvent<any>) {
     const actor = await $getActor({}, true);
-    allUsers.value = await actor.getAllUsers();
-    const userProfile = await actor.getUserProfile();
+    
+    const newFriend = event.data.selectedUser;
 
-    console.log(allUsers);
+    const res = await actor.addFriend(newFriend.data);
+
+    console.log(res);
   }
+
+  async function removeFriend(principalId: any) {
+    const actor = await $getActor({}, true);
+    const res = await actor.removeFriend(principalId);
+
+    console.log(res);
+
+    // console.log('Test!', principalId);
+  }
+
+  const testColumns: TableColumn<TestFriend>[] = [
+    {
+      accessorKey: 'alias',
+      header: () => $translate('profile.friends-sidebar-friend-list-header-alias'),
+      // cell: () => {
+      //   return 'test';
+      // }
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => {
+        return h(UButton, {
+          icon: 'i-material-symbols:person-remove',
+          class: 'cursor-pointer',
+          variant: 'ghost',
+          onClick: () => {removeFriend(row.original.alias)}
+        });
+      }
+    }
+  ];
+
 </script>
 
 <template>
@@ -155,18 +210,29 @@
 
                   <template #body>
                     <div class="mb-10">
-                      <div>{{ $translate('profile.friends-sidebar-add-friend') }}</div>
+                      <UForm :state="userFriendsFormState" @submit="onSubmitAddFriend">
+                        <UFormField :label="$translate('profile.friends-sidebar-add-friend')">
+                          <USelectMenu 
+                            v-model="userFriendsFormState.selectedUser" 
+                            :items="friendsSidebarSelectFriendItems"
+                            :search-input="{icon: 'i-lucide-search'}"
+                            class="w-48"
+                          />
+                        </UFormField>
 
-                      <UForm :state="userFriendsFormState">
-                        <USelect class="w-48" v-model="testValue" :items="allUsers" />
+                        <UButton type="submit">
+                          {{ $translate('profile.friends-sidebar-add-friend-button') }}
+                        </UButton>
                       </UForm>                      
                     </div>
 
                     <div>
-                      <div>{{ $translate('profile.friends-sidebar-friend-list') }}</div>
+                      <div>
+                        {{ $translate('profile.friends-sidebar-friend-list') }}
+                      </div>
                     
                       <div>
-                        <UTable :data="testTableData" />
+                        <UTable :data="testTableData" :columns="testColumns" />
                       </div>
                     </div>
                   </template>
