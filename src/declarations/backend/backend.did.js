@@ -26,10 +26,14 @@ export const idlFactory = ({ IDL }) => {
     'workouts' : IDL.Vec(IDL.Tuple(IDL.Nat, Workout)),
     'alias' : IDL.Text,
   });
+  const Friend = IDL.Record({
+    'principal' : IDL.Principal,
+    'alias' : IDL.Text,
+  });
   const GetUserProfileResponse = IDL.Record({
     'alias' : IDL.Text,
     'totalWorkouts' : IDL.Nat,
-    'friends' : IDL.Vec(IDL.Principal),
+    'friends' : IDL.Vec(Friend),
   });
   const GetWorkoutReportsResponse = IDL.Record({
     'totalSetsPerExercise' : IDL.Nat16,
