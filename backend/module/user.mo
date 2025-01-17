@@ -6,6 +6,7 @@ import { phash } "mo:map/Map";
 import Buffer "mo:base/Buffer";
 import Iter "mo:base/Iter";
 import Principal "mo:base/Principal";
+import Debug "mo:base/Debug";
 
 import Helper "helper";
 
@@ -64,10 +65,12 @@ module {
             Map.set(f.friends, phash, friend, "");
             return true;
         } else {
+            Debug.print("Friend already added");
             return false;
         }
       };
       case (null) {
+        Debug.print("No userprofile found");
         return false;
       };
     }
@@ -114,8 +117,26 @@ module {
             0;
           };
         };
+        // get the alias to all friends and create a new friends response array
+        let friends = Iter.toArray(Map.keys(u.friends));
+       
+        // get the alias to each friend
+        let friendsAlias = Buffer.Buffer<(Types.Friend)>(1);
 
-        { alias = u.alias; friends = Iter.toArray(Map.keys(u.friends)); totalWorkouts = totalWorkouts}
+        for (friend in Iter.fromArray(friends)) {
+          
+          let optFriendProfile = Map.get(users, phash, friend);
+          switch (optFriendProfile) {
+            case (?profile) {
+              friendsAlias.add({ principal=friend; alias=profile.alias; });
+            };
+            case (null) {
+              friendsAlias.add({ principal=friend; alias=Helper.getAliasFromPrincipal(friend); });
+            };
+          };
+        };  
+
+        { alias = u.alias; friends = Buffer.toArray(friendsAlias); totalWorkouts = totalWorkouts}
       };
       case (null) {
         { alias = ""; friends = []; totalWorkouts = 0 }

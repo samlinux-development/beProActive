@@ -2,6 +2,8 @@ import MigrationTypes "./migrations/types";
 
 import Time "mo:base/Time";
 import Nat "mo:base/Nat";
+import Principal "mo:base/Principal";
+import Text "mo:base/Text";
 
 module {
   let StateTypes = MigrationTypes.Current;
@@ -25,8 +27,13 @@ module {
 
   public type GetUserProfileResponse = {
     alias: Text;
-    friends: [Principal];
+    friends: [Friend];
     totalWorkouts: Nat;
+  };
+
+  public type Friend = {
+    principal: Principal;
+    alias: Text;
   };
   
   public type Feed = {

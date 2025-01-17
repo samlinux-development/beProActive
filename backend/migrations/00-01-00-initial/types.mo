@@ -42,11 +42,6 @@ module {
     exercises : [Exercise];
   };
 
-  public type Like = {
-    alias: Text;
-    principal: Principal;
-  };
-
   public type State = {
     var maxPublicWorkouts: Nat;
     var map: Map.Map<Principal, WorkoutToStore>;
