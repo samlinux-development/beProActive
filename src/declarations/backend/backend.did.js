@@ -11,6 +11,11 @@ export const idlFactory = ({ IDL }) => {
     'duration' : Time,
     'exercises' : IDL.Vec(Exercise),
   });
+  const GetAllUsersResponse = IDL.Record({
+    'principal' : IDL.Principal,
+    'alias' : IDL.Text,
+    'totalWorkouts' : IDL.Nat,
+  });
   const Workout = IDL.Record({
     'duration' : Time,
     'date' : Time,
@@ -50,11 +55,7 @@ export const idlFactory = ({ IDL }) => {
     'addFriend' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'addWorkout' : IDL.Func([WorkoutPayload], [IDL.Bool], []),
     'createUserProfile' : IDL.Func([], [IDL.Bool], []),
-    'getAllUsers' : IDL.Func(
-        [],
-        [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Text))],
-        ['query'],
-      ),
+    'getAllUsers' : IDL.Func([], [IDL.Vec(GetAllUsersResponse)], ['query']),
     'getAllWorkouts' : IDL.Func(
         [],
         [
