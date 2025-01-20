@@ -22,12 +22,14 @@ export interface GetAllUsersResponse {
   'principal' : Principal,
   'alias' : string,
   'totalWorkouts' : bigint,
+  'points' : bigint,
 }
 export interface GetPublicReportsResponse { 'totalUsers' : bigint }
 export interface GetUserProfileResponse {
   'alias' : string,
   'totalWorkouts' : bigint,
   'friends' : Array<Friend>,
+  'points' : bigint,
 }
 export interface GetWorkoutReportsResponse {
   'totalSetsPerExercise' : number,

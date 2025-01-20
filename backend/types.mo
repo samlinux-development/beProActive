@@ -29,6 +29,7 @@ module {
     alias: Text;
     friends: [Friend];
     totalWorkouts: Nat;
+    points: Nat;
   };
 
   public type Friend = {
@@ -45,6 +46,7 @@ module {
   public type GetAllUsersResponse = {
     principal:Principal; 
     alias:Text;
-    totalWorkouts:Nat
+    totalWorkouts:Nat;
+    points:Nat;
   };
 };

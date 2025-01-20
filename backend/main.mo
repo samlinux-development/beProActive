@@ -123,7 +123,7 @@ shared ({ caller = creator }) actor class Main () {
   // get users profile
   public shared query ({caller}) func getUserProfile(): async Types.GetUserProfileResponse {
     if(Principal.isAnonymous(caller)) {
-      return {alias = ""; friends = []; totalWorkouts = 0};
+      return {alias = ""; friends = []; totalWorkouts = 0; points = 0};
     };
 
     User.getUserProfile(caller, state.users, state.map);
