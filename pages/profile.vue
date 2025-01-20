@@ -4,9 +4,9 @@
   import { type Workout } from '../src/declarations/backend/backend.did.js';
   import { isAuthenticated } from '../utils/helper';
   import type { FormSubmitEvent, TableColumn } from '@nuxt/ui';
+  import RemoveFriendModal from '~/components/RemoveFriendModal.vue';
 
   const UButton = resolveComponent('UButton');
-  const UModal = resolveComponent('UModal');
 
   const { $translate, $getActor } = useNuxtApp();
   const workouts = ref<Workout[]>([]);
@@ -33,10 +33,11 @@
   });
 
   type TestFriend = {
-   alias: string 
+   alias: string,
+   principal: any
   }
 
-  const testTableData = ref<{alias: string}[]>([]);
+  const testTableData = ref<{alias: string, principal: any}[]>([]);
 
   onMounted(async () => {
     try {
@@ -56,13 +57,7 @@
 
       userDetailFormState.alias = user.value;
 
-      friends.value.forEach(function (friendData: {alias: string}) {
-        const friend = {
-          alias: friendData.alias
-        }
-
-        testTableData.value.push(friend);
-      })
+      getUserFriends();
 
       if(result.length === 0) {
         isLoading.value = false;
@@ -70,7 +65,7 @@
       }
 
       workouts.value = result;
-      workoutsTotal.value = result.length; 
+      workoutsTotal.value = result.length;
       // sort the push-ups by date
       workouts.value.sort((a, b) => Number(b.date) - Number(a.date)); 
 
@@ -90,14 +85,29 @@
     const userProfile = await actor.getUserProfile();
     friends.value = userProfile.friends;
 
+    userFriendsFormState.selectedUser = {label: '', data: {}};
+
     let testAllUsers: any = [];
 
     allUsers.value.forEach(function(user) {
-      friends.value.forEach(function(friend: any) {
+      if (userProfile.alias == user[1]) {
+        return false;
+      }
+
+      // const isAFriend = friends.value.find(function(friend: TestFriend) {
+      //   console.log(friend.principal);
+      // })
+
+      const isAFriend = friends.value.find(function(friend: TestFriend) {
+        // dont check with alias
         if (user[1] == friend.alias) {
-          console.log(user[1], 'Friend already added');
+          return true;
         }
-      })  
+      })
+
+      if (isAFriend) {
+        return true;
+      }
 
       const testUser = {
         label: user[1],
@@ -109,6 +119,28 @@
 
     friendsSidebarSelectFriendItems.value = testAllUsers;
     isFriendsSidebarLoading.value = false;
+  }
+
+  async function getUserFriends() {
+    const actor = await $getActor({}, true);
+    const userProfile = await actor.getUserProfile();
+
+    friends.value = userProfile.friends;
+
+    let userFriends: any[] = [];
+
+    friends.value.forEach(function (friendData: {alias: string, principal: any}) {
+      const friend = {
+        alias: friendData.alias,
+        principal: friendData.principal
+      }
+
+      userFriends.push(friend);
+
+      // testTableData.value.push(friend);
+    })
+
+    testTableData.value = userFriends;
   }
 
   async function onSubmitEditUser(event: FormSubmitEvent<{alias: string}>) {
@@ -131,53 +163,62 @@
     
     const newFriend = event.data.selectedUser;
 
-    const res = await actor.addFriend(newFriend.data);
+    await actor.addFriend(newFriend.data);
 
-    console.log(res);
+    userFriendsFormState.selectedUser = {label: '', data: {}};
+
+    testFunct();
+    getUserFriends();
     isFriendsSidebarLoading.value = false;
   }
 
   async function removeFriend(principalId: any) {
     isFriendsSidebarLoading.value = true;
 
-    console.log(principalId);
-
-    isFriendsSidebarLoading.value = false;
-
+    const actor = await $getActor({}, true);
+    await actor.removeFriend(principalId);
     
-    // const actor = await $getActor({}, true);
-    // const res = await actor.removeFriend(principalId);
-
-    // console.log(res);
+    testFunct();
+    getUserFriends();
+    isFriendsSidebarLoading.value = false;
   }
 
   const testColumns: TableColumn<TestFriend>[] = [
     {
       accessorKey: 'alias',
       header: () => $translate('profile.friends-sidebar-friend-list-header-alias'),
-      // cell: () => {
-      //   return 'test';
-      // }
     },
+
     {
       id: 'removeFriend',
       cell: ({ row }) => {
-        console.log(row);
+        return h(RemoveFriendModal, {
+          principal: row.original.principal,
+          propFunct: removeFriend
+        })
+        
+        // return h(
+        //   UButton, {
+        //     icon: 'i-material-symbols:person-remove',
+        //     class: 'cursor-pointer',
+        //     onClick: () => {removeFriend(row.original.principal)}
+        //   },
+        //   () => h(TestComponent, {text: 'Hello', principal: row.original.principal})
+        // )
 
-        return h(
-          UModal, {
-            title: 'Modal title',
-            description: 'Modal desc'
-          },
-          () => h(UButton, {
-            icon: 'i-material-symbols:person-remove',
-            class: 'cursor-pointer'
-          })
-        )
+        // return h(
+        //   UModal, {
+        //     title: 'Modal title',
+        //     description: 'Modal desc'
+        //   },
+        //   () => h(UButton, {
+        //     icon: 'i-material-symbols:person-remove',
+        //     class: 'cursor-pointer'
+        //   })
+        // )
       }
     }
   ];
-
 </script>
 
 <template>
@@ -216,6 +257,13 @@
                 </div>
               </div>
             </div>
+
+            <USelectMenu 
+              v-model="userFriendsFormState.selectedUser" 
+              :items="friendsSidebarSelectFriendItems"
+              :search-input="{icon: 'i-lucide-search'}"
+              class="w-48"
+            />
 
             <div class="mt-4">
               <div class="flex justify-between items-center">
