@@ -91,10 +91,25 @@ module {
   };
   
   // get all users
-  public func getAllUsers(users: Map.Map<Principal, StateTypes.User>): [(Principal,Text)] {
-    let buffer = Buffer.Buffer<(Principal, Text)>(1);
+  public func getAllUsers(users: Map.Map<Principal, StateTypes.User>, map:Map.Map<Principal,StateTypes.WorkoutToStore>): [Types.GetAllUsersResponse] {
+    let buffer = Buffer.Buffer<(Types.GetAllUsersResponse)>(1);
     for ((key, value) in Map.entries(users)) {
-      buffer.add((key, value.alias));
+      // find workouts for user
+      let workouts = Map.get(map, phash, key);
+      let totalWorkouts = switch (workouts) {
+        case (?w) {
+          Map.size(w.workouts);
+        };
+        case (null) {
+          0;
+        };
+      };
+      let _r = {
+        principal= key;
+        alias = value.alias;
+        totalWorkouts = totalWorkouts;
+      };
+      buffer.add(_r);
     };
     Buffer.toArray(buffer);
   };

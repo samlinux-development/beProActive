@@ -40,4 +40,10 @@ module {
     alias: Text;
     workouts : [(Nat,StateTypes.Workout)];
   };
+
+  public type GetAllUsersResponse = {
+    principal:Principal; 
+    alias:Text;
+    totalWorkouts:Nat
+  };
 };

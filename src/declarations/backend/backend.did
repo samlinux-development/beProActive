@@ -21,10 +21,7 @@ type Main =
    addFriend: (principal) -> (bool);
    addWorkout: (WorkoutPayload) -> (bool);
    createUserProfile: () -> (bool);
-   getAllUsers: () -> (vec record {
-                             principal;
-                             text;
-                           }) query;
+   getAllUsers: () -> (vec GetAllUsersResponse) query;
    getAllWorkouts: () ->
     (vec record {
            principal;
@@ -69,6 +66,12 @@ type GetUserProfileResponse =
    totalWorkouts: nat;
  };
 type GetPublicReportsResponse = record {totalUsers: nat;};
+type GetAllUsersResponse = 
+ record {
+   alias: text;
+   "principal": principal;
+   totalWorkouts: nat;
+ };
 type Friend = 
  record {
    alias: text;

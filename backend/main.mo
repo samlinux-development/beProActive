@@ -130,9 +130,9 @@ shared ({ caller = creator }) actor class Main () {
   };  
 
   // get all users
-  public shared query ({caller}) func getAllUsers(): async [(Principal,Text)] {
+  public shared query ({caller}) func getAllUsers(): async [Types.GetAllUsersResponse] {
     if(Principal.isAnonymous(caller)) {return []};
-    User.getAllUsers(state.users);
+    User.getAllUsers(state.users, state.map);
   };
 
 }

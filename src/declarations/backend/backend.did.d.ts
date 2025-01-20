@@ -14,6 +14,11 @@ export interface Feed {
   'alias' : string,
 }
 export interface Friend { 'principal' : Principal, 'alias' : string }
+export interface GetAllUsersResponse {
+  'principal' : Principal,
+  'alias' : string,
+  'totalWorkouts' : bigint,
+}
 export interface GetPublicReportsResponse { 'totalUsers' : bigint }
 export interface GetUserProfileResponse {
   'alias' : string,
@@ -35,7 +40,7 @@ export interface Main {
   'addFriend' : ActorMethod<[Principal], boolean>,
   'addWorkout' : ActorMethod<[WorkoutPayload], boolean>,
   'createUserProfile' : ActorMethod<[], boolean>,
-  'getAllUsers' : ActorMethod<[], Array<[Principal, string]>>,
+  'getAllUsers' : ActorMethod<[], Array<GetAllUsersResponse>>,
   'getAllWorkouts' : ActorMethod<
     [],
     Array<[Principal, { 'workouts' : Array<[bigint, Workout]> }]>
