@@ -34,6 +34,7 @@ module {
   public type Friend = {
     principal: Principal;
     alias: Text;
+    totalWorkouts:Nat;
   };
   
   public type Feed = {

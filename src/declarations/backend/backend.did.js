@@ -34,6 +34,7 @@ export const idlFactory = ({ IDL }) => {
   const Friend = IDL.Record({
     'principal' : IDL.Principal,
     'alias' : IDL.Text,
+    'totalWorkouts' : IDL.Nat,
   });
   const GetUserProfileResponse = IDL.Record({
     'alias' : IDL.Text,
