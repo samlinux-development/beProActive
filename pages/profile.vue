@@ -84,11 +84,7 @@
     const actor = await $getActor({}, true);
     allUsers.value = await actor.getAllUsers();
 
-    // console.log(allUsers.value);
-
     const userProfile = await actor.getUserProfile();
-
-    console.log(userProfile);
 
     friends.value = userProfile.friends;
 
@@ -96,18 +92,14 @@
 
     let testAllUsers: any = [];
 
-    allUsers.value.forEach(function(user) {
-      if (userProfile.alias == user[1]) {
+    allUsers.value.forEach(function(user: TestFriend) {
+      if (userProfile.alias == user.alias) {
         return false;
       }
 
-      // const isAFriend = friends.value.find(function(friend: TestFriend) {
-      //   console.log(friend.principal);
-      // })
-
       const isAFriend = friends.value.find(function(friend: TestFriend) {
         // dont check with alias
-        if (user[1] == friend.alias) {
+        if (user.alias == friend.alias) {
           return true;
         }
       })
@@ -117,9 +109,8 @@
       }
 
       const testUser = {
-        label: user[1],
-        data: user[0],
-        totalWorkouts: user[2]
+        label: user.alias,
+        data: user.principal
       }
 
       testAllUsers.push(testUser);

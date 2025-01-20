@@ -51,6 +51,8 @@ export default defineNuxtPlugin((nuxtApp) => {
       'profile.friends-sidebar-friend-list': 'Friend list',
       'profile.friends-sidebar-friend-list-header-alias': 'Alias',
       'profile.friends-sidebar-friend-list-header-workouts': 'Workouts',
+      'profile.friends-sidebar-remove-friend-modal-button': 'Remove friend',
+      'profile.friends-sidebar-remove-friend-modal-close-button': 'Close',
 
       'workout.typeOfExercise0':'Choose exercise',
       'workout.typeOfExercise1':'Push ups',
