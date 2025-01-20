@@ -34,10 +34,11 @@
 
   type TestFriend = {
    alias: string,
-   principal: any
+   principal: any,
+   totalWorkouts: bigint
   }
 
-  const testTableData = ref<{alias: string, principal: any}[]>([]);
+  const testTableData = ref<{alias: string, principal: any, totalWorkouts: bigint}[]>([]);
 
   onMounted(async () => {
     try {
@@ -82,7 +83,13 @@
     isFriendsSidebarLoading.value = true;
     const actor = await $getActor({}, true);
     allUsers.value = await actor.getAllUsers();
+
+    // console.log(allUsers.value);
+
     const userProfile = await actor.getUserProfile();
+
+    console.log(userProfile);
+
     friends.value = userProfile.friends;
 
     userFriendsFormState.selectedUser = {label: '', data: {}};
@@ -111,7 +118,8 @@
 
       const testUser = {
         label: user[1],
-        data: user[0]
+        data: user[0],
+        totalWorkouts: user[2]
       }
 
       testAllUsers.push(testUser);
@@ -126,18 +134,17 @@
     const userProfile = await actor.getUserProfile();
 
     friends.value = userProfile.friends;
-
+    
     let userFriends: any[] = [];
 
-    friends.value.forEach(function (friendData: {alias: string, principal: any}) {
+    friends.value.forEach(function (friendData: {alias: string, principal: any, totalWorkouts: bigint}) {
       const friend = {
         alias: friendData.alias,
-        principal: friendData.principal
+        principal: friendData.principal,
+        totalWorkouts: friendData.totalWorkouts
       }
 
       userFriends.push(friend);
-
-      // testTableData.value.push(friend);
     })
 
     testTableData.value = userFriends;
@@ -190,32 +197,17 @@
     },
 
     {
+      accessorKey: 'totalWorkouts',
+      header: () => $translate('profile.friends-sidebar-friend-list-header-workouts'),
+    },
+
+    {
       id: 'removeFriend',
       cell: ({ row }) => {
         return h(RemoveFriendModal, {
           principal: row.original.principal,
           propFunct: removeFriend
         })
-        
-        // return h(
-        //   UButton, {
-        //     icon: 'i-material-symbols:person-remove',
-        //     class: 'cursor-pointer',
-        //     onClick: () => {removeFriend(row.original.principal)}
-        //   },
-        //   () => h(TestComponent, {text: 'Hello', principal: row.original.principal})
-        // )
-
-        // return h(
-        //   UModal, {
-        //     title: 'Modal title',
-        //     description: 'Modal desc'
-        //   },
-        //   () => h(UButton, {
-        //     icon: 'i-material-symbols:person-remove',
-        //     class: 'cursor-pointer'
-        //   })
-        // )
       }
     }
   ];
