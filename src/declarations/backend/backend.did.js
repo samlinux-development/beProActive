@@ -15,6 +15,7 @@ export const idlFactory = ({ IDL }) => {
     'principal' : IDL.Principal,
     'alias' : IDL.Text,
     'totalWorkouts' : IDL.Nat,
+    'points' : IDL.Nat,
   });
   const Workout = IDL.Record({
     'duration' : Time,
@@ -40,6 +41,7 @@ export const idlFactory = ({ IDL }) => {
     'alias' : IDL.Text,
     'totalWorkouts' : IDL.Nat,
     'friends' : IDL.Vec(Friend),
+    'points' : IDL.Nat,
   });
   const GetWorkoutReportsResponse = IDL.Record({
     'totalSetsPerExercise' : IDL.Nat16,

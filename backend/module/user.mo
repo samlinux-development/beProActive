@@ -28,6 +28,7 @@ module {
         let updatedUser:StateTypes.User = {
           alias = updatedAlias;
           friends = u.friends;
+          points = u.points;
         };
         Map.set(users, phash, caller, updatedUser);
         true;
@@ -82,6 +83,7 @@ module {
       let user: StateTypes.User = {
         alias = Helper.getAliasFromPrincipal(caller);
         friends = Map.new<Principal, Text>();
+        points = 0;
       };
       Map.set(users, phash, caller, user);
       return true;
@@ -108,6 +110,7 @@ module {
         principal= key;
         alias = value.alias;
         totalWorkouts = totalWorkouts;
+        points = value.points;
       };
       buffer.add(_r);
     };
@@ -161,10 +164,10 @@ module {
           };
         };  
 
-        { alias = u.alias; friends = Buffer.toArray(friendsAlias); totalWorkouts = totalWorkouts}
+        { alias = u.alias; friends = Buffer.toArray(friendsAlias); totalWorkouts = totalWorkouts; points = u.points };
       };
       case (null) {
-        { alias = ""; friends = []; totalWorkouts = 0 }
+        { alias=""; friends=[]; totalWorkouts=0; points=0 };
       };
     }
   }; 

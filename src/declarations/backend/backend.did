@@ -63,12 +63,14 @@ type GetUserProfileResponse =
  record {
    alias: text;
    friends: vec Friend;
+   points: nat;
    totalWorkouts: nat;
  };
 type GetPublicReportsResponse = record {totalUsers: nat;};
 type GetAllUsersResponse = 
  record {
    alias: text;
+   points: nat;
    "principal": principal;
    totalWorkouts: nat;
  };

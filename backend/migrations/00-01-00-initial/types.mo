@@ -34,6 +34,7 @@ module {
   public type User = {
     alias : Text;
     friends : Map.Map<Principal,Text>;
+    points: Nat;
   };
 
   public type LatestWorkouts = {
