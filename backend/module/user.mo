@@ -140,13 +140,23 @@ module {
 
         for (friend in Iter.fromArray(friends)) {
           
+          let workouts = Map.get(map, phash, friend);
+          let totalWorkouts = switch (workouts) {
+            case (?w) {
+              Map.size(w.workouts);
+            };
+            case (null) {
+              0;
+            };
+          };
+
           let optFriendProfile = Map.get(users, phash, friend);
           switch (optFriendProfile) {
             case (?profile) {
-              friendsAlias.add({ principal=friend; alias=profile.alias; });
+              friendsAlias.add({ principal=friend; alias=profile.alias; totalWorkouts=totalWorkouts; });
             };
             case (null) {
-              friendsAlias.add({ principal=friend; alias=Helper.getAliasFromPrincipal(friend); });
+              friendsAlias.add({ principal=friend; alias=Helper.getAliasFromPrincipal(friend); totalWorkouts=totalWorkouts; });
             };
           };
         };  

@@ -76,6 +76,7 @@ type Friend =
  record {
    alias: text;
    "principal": principal;
+   totalWorkouts: nat;
  };
 type Feed = 
  record {
