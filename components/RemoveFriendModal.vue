@@ -1,29 +1,25 @@
 <script lang="ts" setup>
   const { $translate } = useNuxtApp();
-  const isModalOpen = ref(false); 
 
-  const props = defineProps<{
-    principal: any;
-    propFunct: any;
+  defineProps<{
+    friendPrincipal: any;
+    removeFriend: any;
+    friendAlias: string;
   }>();
-
-  function closeModal() {
-    isModalOpen.value = false;
-  }
 </script>
 
 <template>
-  <UModal aria-describedby="undefined" v-model:open="isModalOpen" title="Remove friend" :close="{class: 'cursor-pointer'}">
-    <UButton icon="i-material-symbols:person-remove" class="cursor-pointer" />
+  <UModal :title="$translate('profile.friends-sidebar-remove-friend-modal-title')" :close="{class: 'text-[20px]'}">
+    <UButton class="remove-friend-button" icon="i-material-symbols:person-remove" />
 
     <template #body>
-      <div class="flex gap-2">
-        <UButton @click="() => {propFunct(principal)}" class="cursor-pointer">
-          {{ $translate('profile.friends-sidebar-remove-friend-modal-button') }}
-        </UButton>
+      <div class="mb-5 -mt-5">
+        {{ $translate('profile.friends-sidebar-remove-friend-modal-description').replace('<FRIEND_ALIAS>', friendAlias) }}
+      </div>
 
-        <UButton @click="closeModal" class="cursor-pointer">
-           {{ $translate('profile.friends-sidebar-remove-friend-modal-close-button') }}
+      <div class="flex gap-2">
+        <UButton @click="() => {removeFriend(friendPrincipal)}">
+          {{ $translate('profile.friends-sidebar-remove-friend-modal-confirm-button') }}
         </UButton>
       </div>
     </template>

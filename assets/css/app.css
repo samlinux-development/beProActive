@@ -38,6 +38,14 @@ a:hover {
   text-decoration: underline;
 }
 
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 .hello {
   margin-bottom: 1rem;
 }

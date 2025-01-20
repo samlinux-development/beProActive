@@ -32,13 +32,13 @@
     selectedUser: {label: '', data: {}}
   });
 
-  type TestFriend = {
+  type UserFriend = {
    alias: string,
    principal: any,
    totalWorkouts: bigint
   }
 
-  const testTableData = ref<{alias: string, principal: any, totalWorkouts: bigint}[]>([]);
+  const userFriendsTableData = ref<{alias: string, principal: any, totalWorkouts: bigint}[]>([]);
 
   onMounted(async () => {
     try {
@@ -79,7 +79,7 @@
     }
   });
 
-  async function testFunct() {
+  async function loadUserFriendsSidebar() {
     isFriendsSidebarLoading.value = true;
     const actor = await $getActor({}, true);
     allUsers.value = await actor.getAllUsers();
@@ -92,12 +92,13 @@
 
     let testAllUsers: any = [];
 
-    allUsers.value.forEach(function(user: TestFriend) {
+    allUsers.value.forEach(function(user: UserFriend) {
+      // dont check with alias
       if (userProfile.alias == user.alias) {
         return false;
       }
 
-      const isAFriend = friends.value.find(function(friend: TestFriend) {
+      const isAFriend = friends.value.find(function(friend: UserFriend) {
         // dont check with alias
         if (user.alias == friend.alias) {
           return true;
@@ -138,7 +139,7 @@
       userFriends.push(friend);
     })
 
-    testTableData.value = userFriends;
+    userFriendsTableData.value = userFriends;
   }
 
   async function onSubmitEditUser(event: FormSubmitEvent<{alias: string}>) {
@@ -155,19 +156,19 @@
     isEditProfileFormDisabled.value = false;
   }
 
-  async function addFriend(event: FormSubmitEvent<any>) {
-    isFriendsSidebarLoading.value = true;
-    const actor = await $getActor({}, true);
-    
-    const newFriend = event.data.selectedUser;
+  async function addFriend() {
+    if (userFriendsFormState.selectedUser.label) {
+      isFriendsSidebarLoading.value = true;
+      const actor = await $getActor({}, true);
+      
+      await actor.addFriend(userFriendsFormState.selectedUser.data);
 
-    await actor.addFriend(newFriend.data);
+      userFriendsFormState.selectedUser = {label: '', data: {}};
 
-    userFriendsFormState.selectedUser = {label: '', data: {}};
-
-    testFunct();
-    getUserFriends();
-    isFriendsSidebarLoading.value = false;
+      loadUserFriendsSidebar();
+      getUserFriends();
+      isFriendsSidebarLoading.value = false;
+    }
   }
 
   async function removeFriend(principalId: any) {
@@ -176,12 +177,12 @@
     const actor = await $getActor({}, true);
     await actor.removeFriend(principalId);
     
-    testFunct();
+    loadUserFriendsSidebar();
     getUserFriends();
     isFriendsSidebarLoading.value = false;
   }
 
-  const testColumns: TableColumn<TestFriend>[] = [
+  const userFriendsTableColumn: TableColumn<UserFriend>[] = [
     {
       accessorKey: 'alias',
       header: () => $translate('profile.friends-sidebar-friend-list-header-alias'),
@@ -196,8 +197,9 @@
       id: 'removeFriend',
       cell: ({ row }) => {
         return h(RemoveFriendModal, {
-          principal: row.original.principal,
-          propFunct: removeFriend
+          friendPrincipal: row.original.principal,
+          removeFriend: removeFriend,
+          friendAlias: row.original.alias
         })
       }
     }
@@ -241,22 +243,15 @@
               </div>
             </div>
 
-            <USelectMenu 
-              v-model="userFriendsFormState.selectedUser" 
-              :items="friendsSidebarSelectFriendItems"
-              :search-input="{icon: 'i-lucide-search'}"
-              class="w-48"
-            />
-
             <div class="mt-4">
               <div class="flex justify-between items-center">
                 <USlideover 
                   :title="$translate('profile.friends-sidebar-title')"
                   :close="{
-                    class: 'cursor-pointer text-[25px]'
+                    class: 'text-[25px]'
                   }"
                 >
-                  <UButton variant="outline" class="cursor-pointer font-bold" @click="testFunct">
+                  <UButton variant="outline" class="cursor-pointer font-bold" @click="loadUserFriendsSidebar">
                     {{ $translate('profile.your-friends') }} {{ friends.length }}
                   </UButton>
 
@@ -266,10 +261,10 @@
                     </div>
 
                     <div v-else-if="!isFriendsSidebarLoading">
-                      <div class="mb-10">
-                        <UForm :state="userFriendsFormState" @submit="addFriend">
+                      <div class="mb-2">
+                        <UForm class="flex gap-2 items-end flex-wrap" :state="userFriendsFormState" @submit="addFriend">
                           <UFormField :label="$translate('profile.friends-sidebar-add-friend')">
-                            <USelectMenu 
+                            <USelectMenu
                               v-model="userFriendsFormState.selectedUser" 
                               :items="friendsSidebarSelectFriendItems"
                               :search-input="{icon: 'i-lucide-search'}"
@@ -277,7 +272,7 @@
                             />
                           </UFormField>
 
-                          <UButton type="submit">
+                          <UButton type="submit" class="cursor-pointer h-[32px]">
                             {{ $translate('profile.friends-sidebar-add-friend-button') }}
                           </UButton>
                         </UForm>                      
@@ -285,11 +280,7 @@
 
                       <div>
                         <div>
-                          {{ $translate('profile.friends-sidebar-friend-list') }}
-                        </div>
-                      
-                        <div>
-                          <UTable :data="testTableData" :columns="testColumns" />
+                          <UTable class="friends-table-container" :data="userFriendsTableData" :columns="userFriendsTableColumn" />
                         </div>
                       </div>
                     </div>
@@ -317,7 +308,7 @@
                           <UInput autofocus v-model="userDetailFormState.alias"></UInput>
                         </UFormField>
 
-                        <UButton :disabled="isEditProfileFormDisabled" type="submit" class="mt-5 hover:cursor-pointer">
+                        <UButton :disabled="isEditProfileFormDisabled" type="submit" class=" hover:cursor-pointer">
                           {{ $translate('profile.edit-profile-sidebar-submit-button') }}
                         </UButton>
                       </UForm>
@@ -358,8 +349,15 @@
   </div>
 </template>
 
+<style>
+  .friends-table-container table th, .friends-table-container table td {
+    text-align: center;
+  }
+</style>
+
 <style scoped>
-  
+
+
   ol {
     padding-left: 0px;
   }
