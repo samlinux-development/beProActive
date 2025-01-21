@@ -3,12 +3,23 @@
   import { useNuxtApp } from '#app'
   import { type Workout } from '../src/declarations/backend/backend.did.js';
   import { isAuthenticated } from '../utils/helper';
-  import type { FormSubmitEvent, TableColumn } from '@nuxt/ui';
   import RemoveFriendModal from '~/components/RemoveFriendModal.vue';
+  import type { FormSubmitEvent, TableColumn } from '@nuxt/ui';
+
+  interface User {
+    alias: string,
+    principal: any,
+    totalWorkouts?: bigint
+  }
+
+  interface SelectFriendItem {
+    label: string,
+    principal: any
+  }
 
   const UButton = resolveComponent('UButton');
 
-  const { $translate, $getActor } = useNuxtApp();
+  const { $translate, $getActor, $authClient } = useNuxtApp() as any;
   const workouts = ref<Workout[]>([]);
   const workoutsTotal = ref<number>(0);
   const isLoading = ref(true);
@@ -20,7 +31,7 @@
   const isEditProfileFormDisabled = ref<boolean>(false);
   const isFriendsSidebarLoading = ref<boolean>(false);
 
-  const friendsSidebarSelectFriendItems = ref<{label: string, data: any}[]>([]);
+  const friendsSidebarSelectFriendItems = ref<SelectFriendItem[]>([]);
 
   const allUsers = ref<[]>([]);
 
@@ -29,16 +40,10 @@
   });
 
   const userFriendsFormState = reactive({
-    selectedUser: {label: '', data: {}}
+    selectedUser: {label: '', principal: {}}
   });
 
-  type UserFriend = {
-   alias: string,
-   principal: any,
-   totalWorkouts: bigint
-  }
-
-  const userFriendsTableData = ref<{alias: string, principal: any, totalWorkouts: bigint}[]>([]);
+  const userFriendsTableData = ref<User[]>([]);
 
   onMounted(async () => {
     try {
@@ -79,69 +84,6 @@
     }
   });
 
-  async function loadUserFriendsSidebar() {
-    isFriendsSidebarLoading.value = true;
-    const actor = await $getActor({}, true);
-    allUsers.value = await actor.getAllUsers();
-
-    const userProfile = await actor.getUserProfile();
-
-    friends.value = userProfile.friends;
-
-    userFriendsFormState.selectedUser = {label: '', data: {}};
-
-    let testAllUsers: any = [];
-
-    allUsers.value.forEach(function(user: UserFriend) {
-      // dont check with alias
-      if (userProfile.alias == user.alias) {
-        return false;
-      }
-
-      const isAFriend = friends.value.find(function(friend: UserFriend) {
-        // dont check with alias
-        if (user.alias == friend.alias) {
-          return true;
-        }
-      })
-
-      if (isAFriend) {
-        return true;
-      }
-
-      const testUser = {
-        label: user.alias,
-        data: user.principal
-      }
-
-      testAllUsers.push(testUser);
-    })
-
-    friendsSidebarSelectFriendItems.value = testAllUsers;
-    isFriendsSidebarLoading.value = false;
-  }
-
-  async function getUserFriends() {
-    const actor = await $getActor({}, true);
-    const userProfile = await actor.getUserProfile();
-
-    friends.value = userProfile.friends;
-    
-    let userFriends: any[] = [];
-
-    friends.value.forEach(function (friendData: {alias: string, principal: any, totalWorkouts: bigint}) {
-      const friend = {
-        alias: friendData.alias,
-        principal: friendData.principal,
-        totalWorkouts: friendData.totalWorkouts
-      }
-
-      userFriends.push(friend);
-    })
-
-    userFriendsTableData.value = userFriends;
-  }
-
   async function onSubmitEditUser(event: FormSubmitEvent<{alias: string}>) {
     isEditProfileFormDisabled.value = true;
     const actor = await $getActor({}, true);
@@ -156,14 +98,85 @@
     isEditProfileFormDisabled.value = false;
   }
 
+  async function loadUserFriendsSidebar() {
+    isFriendsSidebarLoading.value = true;
+    const actor = await $getActor({}, true);
+    const identity = await $authClient.getIdentity();
+    allUsers.value = await actor.getAllUsers();
+
+    const userProfile = await actor.getUserProfile();
+
+    friends.value = userProfile.friends;
+
+    userFriendsFormState.selectedUser = {label: '', principal: {}};
+
+    let nonFriendUsers: SelectFriendItem[] = [];
+
+    allUsers.value.forEach(async function(user: User) {
+      // checks if its the user himself
+      if (user.principal.toText() == identity.getPrincipal().toText()) {
+        return true;
+      }
+
+      // checks if user is already a friend
+      const isAFriend = friends.value.find(function(friend: User) {
+        if (friend.principal.toText() == user.principal.toText()) {
+          return true;
+        }
+      })
+
+      if (isAFriend) {
+        return true;
+      }
+
+      const nonFriendUser: SelectFriendItem = {
+        label: user.alias,
+        principal: user.principal
+      }
+
+      nonFriendUsers.push(nonFriendUser);
+    })
+
+    friendsSidebarSelectFriendItems.value = nonFriendUsers;
+
+    isFriendsSidebarLoading.value = false;
+  }
+
+  /**
+   * gets the user friends data
+   */
+  async function getUserFriends() {
+    const actor = await $getActor({}, true);
+    const userProfile = await actor.getUserProfile();
+
+    friends.value = userProfile.friends;
+    
+    let userFriends: User[] = [];
+
+    friends.value.forEach(function (friendData: User) {
+      const friend = {
+        alias: friendData.alias,
+        principal: friendData.principal,
+        totalWorkouts: friendData.totalWorkouts
+      }
+
+      userFriends.push(friend);
+    })
+
+    userFriendsTableData.value = userFriends;
+  }
+
+  /**
+   * adds a friend
+   */
   async function addFriend() {
     if (userFriendsFormState.selectedUser.label) {
       isFriendsSidebarLoading.value = true;
       const actor = await $getActor({}, true);
       
-      await actor.addFriend(userFriendsFormState.selectedUser.data);
+      await actor.addFriend(userFriendsFormState.selectedUser.principal);
 
-      userFriendsFormState.selectedUser = {label: '', data: {}};
+      userFriendsFormState.selectedUser = {label: '', principal: {}};
 
       loadUserFriendsSidebar();
       getUserFriends();
@@ -171,18 +184,21 @@
     }
   }
 
-  async function removeFriend(principalId: any) {
+  /**
+   * removes a friend 
+   */
+  async function removeFriend(principal: any) {
     isFriendsSidebarLoading.value = true;
 
     const actor = await $getActor({}, true);
-    await actor.removeFriend(principalId);
+    await actor.removeFriend(principal);
     
     loadUserFriendsSidebar();
     getUserFriends();
     isFriendsSidebarLoading.value = false;
   }
 
-  const userFriendsTableColumn: TableColumn<UserFriend>[] = [
+  const userFriendsTableColumn: TableColumn<User>[] = [
     {
       accessorKey: 'alias',
       header: () => $translate('profile.friends-sidebar-friend-list-header-alias'),
@@ -265,7 +281,7 @@
                         <UForm class="flex gap-2 items-end flex-wrap" :state="userFriendsFormState" @submit="addFriend">
                           <UFormField :label="$translate('profile.friends-sidebar-add-friend')">
                             <USelectMenu
-                              v-model="userFriendsFormState.selectedUser" 
+                              v-model="userFriendsFormState.selectedUser"
                               :items="friendsSidebarSelectFriendItems"
                               :search-input="{icon: 'i-lucide-search'}"
                               class="w-48"
@@ -356,7 +372,6 @@
 </style>
 
 <style scoped>
-
 
   ol {
     padding-left: 0px;

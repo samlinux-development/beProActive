@@ -48,7 +48,6 @@ export default defineNuxtPlugin((nuxtApp) => {
       'profile.friends-sidebar-title': 'Friends',
       'profile.friends-sidebar-add-friend': 'Add a friend',
       'profile.friends-sidebar-add-friend-button': 'Add',
-      'profile.friends-sidebar-friend-list': 'Friend list',
       'profile.friends-sidebar-friend-list-header-alias': 'Friends',
       'profile.friends-sidebar-friend-list-header-workouts': 'Workouts',
       'profile.friends-sidebar-remove-friend-modal-title': 'Remove friend',
