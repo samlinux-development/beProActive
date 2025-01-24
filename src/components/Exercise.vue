@@ -1,8 +1,9 @@
 <script lang="ts" setup>
+  import { exerciseOptions } from '../utils/exerciseOptions' 
   const { $translate } = useNuxtApp();
   
-  // temp helper to know types with minutes
-  const minTypes = [5,6,10,24,25];
+  // get all option ids for minutes from the exerciseOptions
+  const minTypes = exerciseOptions.filter(option => option.add === 'minutes').map(option => Number(option.value));
 
   interface Exercise {
     typeOfExercise: number | null;
@@ -22,6 +23,7 @@
     }
     return 0;
   });
+
 </script>
 
 <template>
@@ -36,11 +38,6 @@
       {{ minutes }} {{$translate('workout.minutes')}}
     </span>
     <span v-else-if="Number(exercise.seconds) !== 0">{{ Number(exercise.seconds) }}  {{$translate('workout.seconds')}}</span>
-   
-
+  
   </div>
 </template>
-
-<style scoped>
-
-</style>

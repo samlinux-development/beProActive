@@ -11,6 +11,28 @@ export const idlFactory = ({ IDL }) => {
     'duration' : Time,
     'exercises' : IDL.Vec(Exercise),
   });
+  const WorkoutsPerUserResponse = IDL.Record({
+    'duration' : Time,
+    'date' : Time,
+    'exercises' : IDL.Vec(Exercise),
+  });
+  const Friend = IDL.Record({
+    'principal' : IDL.Principal,
+    'alias' : IDL.Text,
+    'totalWorkouts' : IDL.Nat,
+  });
+  const GetUserProfileResponse = IDL.Record({
+    'alias' : IDL.Text,
+    'size' : IDL.Nat16,
+    'totalWorkouts' : IDL.Nat,
+    'friends' : IDL.Vec(Friend),
+    'points' : IDL.Nat,
+  });
+  const GetAllUserDataResponse = IDL.Record({
+    'principal' : IDL.Principal,
+    'workouts' : IDL.Vec(WorkoutsPerUserResponse),
+    'userProfile' : GetUserProfileResponse,
+  });
   const GetAllUsersResponse = IDL.Record({
     'principal' : IDL.Principal,
     'alias' : IDL.Text,
@@ -28,20 +50,16 @@ export const idlFactory = ({ IDL }) => {
     'exercises' : IDL.Vec(Exercise),
   });
   const GetPublicReportsResponse = IDL.Record({ 'totalUsers' : IDL.Nat });
-  const Feed = IDL.Record({
-    'workouts' : IDL.Vec(IDL.Tuple(IDL.Nat, Workout)),
-    'alias' : IDL.Text,
-  });
-  const Friend = IDL.Record({
-    'principal' : IDL.Principal,
+  const GetRankingResponse = IDL.Record({
     'alias' : IDL.Text,
     'totalWorkouts' : IDL.Nat,
-  });
-  const GetUserProfileResponse = IDL.Record({
-    'alias' : IDL.Text,
-    'totalWorkouts' : IDL.Nat,
-    'friends' : IDL.Vec(Friend),
     'points' : IDL.Nat,
+  });
+  const GetUserFeedResponse = IDL.Record({
+    'duration' : Time,
+    'alias' : IDL.Text,
+    'date' : Time,
+    'exercises' : IDL.Vec(Exercise),
   });
   const GetWorkoutReportsResponse = IDL.Record({
     'totalSetsPerExercise' : IDL.Nat16,
@@ -49,15 +67,16 @@ export const idlFactory = ({ IDL }) => {
     'totalWorkouts' : IDL.Nat,
     'totalRepsPerExercise' : IDL.Nat16,
   });
-  const WorkoutsPerUserResponse = IDL.Record({
-    'duration' : Time,
-    'date' : Time,
-    'exercises' : IDL.Vec(Exercise),
-  });
+  const UpdateProfile = IDL.Record({ 'alias' : IDL.Text, 'size' : IDL.Nat16 });
   const Main = IDL.Service({
-    'addFriend' : IDL.Func([IDL.Principal], [IDL.Bool], []),
+    'addFriend' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'addWorkout' : IDL.Func([WorkoutPayload], [IDL.Bool], []),
     'createUserProfile' : IDL.Func([], [IDL.Bool], []),
+    'getAllUserData' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(GetAllUserDataResponse)],
+        ['query'],
+      ),
     'getAllUsers' : IDL.Func([], [IDL.Vec(GetAllUsersResponse)], ['query']),
     'getAllWorkouts' : IDL.Func(
         [],
@@ -77,11 +96,8 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getPublicReports' : IDL.Func([], [GetPublicReportsResponse], ['query']),
-    'getUserFeed' : IDL.Func(
-        [],
-        [IDL.Vec(IDL.Tuple(IDL.Principal, Feed))],
-        ['query'],
-      ),
+    'getRanking' : IDL.Func([], [IDL.Vec(GetRankingResponse)], ['query']),
+    'getUserFeed' : IDL.Func([], [IDL.Vec(GetUserFeedResponse)], ['query']),
     'getUserProfile' : IDL.Func([], [GetUserProfileResponse], ['query']),
     'getWorkoutReports' : IDL.Func(
         [IDL.Nat16],
@@ -93,9 +109,10 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(WorkoutsPerUserResponse)],
         ['query'],
       ),
-    'removeFriend' : IDL.Func([IDL.Principal], [IDL.Bool], []),
+    'removeFriend' : IDL.Func([IDL.Text], [IDL.Bool], []),
+    'removeUser' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'setMaxPublicWorkouts' : IDL.Func([IDL.Nat], [IDL.Bool], []),
-    'updateProfile' : IDL.Func([IDL.Text], [IDL.Bool], []),
+    'updateProfile' : IDL.Func([UpdateProfile], [IDL.Bool], []),
   });
   return Main;
 };

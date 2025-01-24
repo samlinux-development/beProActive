@@ -44,6 +44,11 @@ shared ({ caller = creator }) actor class Main () {
     }
   };
 
+  // getRanking
+  public query func getRanking(): async [Types.GetRankingResponse]{
+    User.getRanking(state.users, state.map);
+  };
+
   // ----------------------------------
   // only for creator
   // ----------------------------------
@@ -62,6 +67,18 @@ shared ({ caller = creator }) actor class Main () {
   public shared query ({caller}) func getAllWorkouts(): async [(Principal, {workouts: [(Nat, StateTypes.Workout)]})]{
     if (caller != creator) {return [];};
     Workout.getAllWorkouts(state.map);
+  };
+
+  // get all user data
+  public shared query ({caller}) func getAllUserData(user:Principal): async ?Types.GetAllUserDataResponse {
+    if (caller != creator) {return null;};
+    ?User.getAllUserData(user, state.users, state.map);  
+  };
+
+  // remove a user from the system
+  public shared ({caller}) func removeUser(user: Principal): async Bool {
+    if (caller != creator) {return false;};
+    User.removeUser(user, state.users, state.map);
   };
 
   //----------------------------------
@@ -95,35 +112,35 @@ shared ({ caller = creator }) actor class Main () {
   };
 
   // get users feed
-  public shared query ({caller}) func getUserFeed(): async [(Principal, Types.Feed)]{
+  public shared query ({caller}) func getUserFeed(): async [Types.GetUserFeedResponse]{
     if(Principal.isAnonymous(caller)) {return []};
     User.getUserFeed(caller, state.users, state.map);
   };
 
   // add friend to users profile
-  public shared ({caller}) func addFriend(friend:Principal):async Bool {
+  public shared ({caller}) func addFriend(friend:Text):async Bool {
     if(Principal.isAnonymous(caller)) {return false;};
     await User.addFriend(caller, friend, state.users);
   };
 
   // remove friend from users profile
-  public shared ({caller}) func removeFriend(friend:Principal):async Bool {
+  public shared ({caller}) func removeFriend(friend:Text):async Bool {
     if(Principal.isAnonymous(caller)) {return false;};
     await User.removeFriend(caller, friend, state.users);
   };
   
   // update users profile data
-  public shared ({caller}) func updateProfile(alias:Text):async Bool {
+  public shared ({caller}) func updateProfile(profile:Types.UpdateProfile):async Bool {
     if(Principal.isAnonymous(caller)) {
       return false;
     };
-    await User.updateProfile(caller, alias, state.users);
+    await User.updateProfile(caller, profile, state.users);
   };
 
   // get users profile
   public shared query ({caller}) func getUserProfile(): async Types.GetUserProfileResponse {
     if(Principal.isAnonymous(caller)) {
-      return {alias = ""; friends = []; totalWorkouts = 0; points = 0};
+      return {alias = ""; size=0; friends = []; totalWorkouts = 0; points = 0};
     };
 
     User.getUserProfile(caller, state.users, state.map);

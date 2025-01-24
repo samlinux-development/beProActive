@@ -11,6 +11,7 @@ const nav = [
 const { $getActor } = useNuxtApp();
 let { $authClient } = useNuxtApp() as any;
 const { $maxTimeToLiveNs } = useNuxtApp();
+const isLoading = ref(false);
 
 const config = useRuntimeConfig();
 const isLoggedIn = ref(false);
@@ -32,6 +33,7 @@ onMounted(async () => {
  */
 const login = async () => {
   try {
+    isLoading.value = true;
     await $authClient.login({
       // 7 days in nanoseconds, not sure if this is working ???
       maxTimeToLive: $maxTimeToLiveNs,
@@ -39,14 +41,11 @@ const login = async () => {
 
       onSuccess: async () => {
         const actor = await $getActor({},true);
-
-        //const identity = $authClient.getIdentity();
-        //console.log('PI: ',identity.getPrincipal().toText());
         isLoggedIn.value = true;
 
-        // check or create user profile // we  must not wait
-        actor.createUserProfile();
-
+        // check or create user profile
+        await actor.createUserProfile();
+        isLoading.value = false;
         // Redirect to the profile page after login
         router.push({ path: '/profile' });
       },
@@ -80,49 +79,51 @@ const logout = async () => {
 </script>
 
 <template>
-  <nav class="navigation sticky-top">
-    <ol>
-      <div class="left-nav">
-        <li v-for="(item, index) in nav" :key="index">
-          <router-link :to="item.to" class="nav-link">
-            <Icon :name="item.icon" class="icon" />
-          </router-link>
-        </li>
-      </div>
+    <div v-if="isLoading"> <Spinner /> </div>
+    <div v-else>
+      <nav class="navigation sticky-top">
+        <ol>
+          <div class="left-nav">
+            <li v-for="(item, index) in nav" :key="index">
+              <router-link :to="item.to" class="nav-link">
+                <Icon :name="item.icon" class="icon" />
+              </router-link>
+            </li>
+          </div>
 
-      <div class="center-nav add-button" v-if="isLoggedIn">
-        <li v-if="isLoggedIn" class="nav-link">
-          <router-link to="/add" class="nav-link">
-            <Icon name="mdi:plus-box" class="icon" />
-          </router-link> 
-        </li>
-      </div>
+          <div class="center-nav add-button" v-if="isLoggedIn">
+            <li v-if="isLoggedIn" class="nav-link">
+              <router-link to="/add" class="nav-link">
+                <Icon name="mdi:plus-box" class="icon" />
+              </router-link> 
+            </li>
+          </div>
 
-      <div class="right-nav" >
-        <li class="nav-link" v-if="isLoggedIn">
-          <router-link to="/profile" class="nav-link">
-            <Icon name="mdi:account" class="icon" />
-          </router-link>
-        </li>
+          <div class="right-nav" >
+            <li class="nav-link" v-if="isLoggedIn">
+              <router-link to="/profile" class="nav-link">
+                <Icon name="mdi:account" class="icon" />
+              </router-link>
+            </li>
 
-        <li class="nav-link" v-if="isLoggedIn">
-          <button @click="logout" class="nav-link">
-            <Icon name="mdi:logout" class="icon" />
-          </button>
-        </li>
-        <li v-else class="nav-link">
-          <button @click="login" class="nav-link">
-            <Icon name="mdi:login-variant" class="icon"/>
-          </button>
-        </li>  
-      </div>
+            <li class="nav-link" v-if="isLoggedIn">
+              <button @click="logout" class="nav-link">
+                <Icon name="mdi:logout" class="icon" />
+              </button>
+            </li>
+            <li v-else class="nav-link">
+              <button @click="login" class="nav-link">
+                <Icon name="mdi:login-variant" class="icon"/>
+              </button>
+            </li>  
+          </div>
 
-    </ol>
-  </nav>
+        </ol>
+      </nav>
+    </div>
 </template>
 
 <style scoped>
-  
   .icon {
     color: #52bd55;
     font-size: 2rem;
@@ -162,6 +163,11 @@ const logout = async () => {
     width: 48px;
   }
 
+  .right-nav .nav-link {
+    height: 48px;
+    width: 48px;
+  }
+  
   .right-nav .nav-link button.nav-link {
     font-size: 32px;
     padding: 0px;
@@ -180,7 +186,7 @@ const logout = async () => {
   .right-nav {
     flex: 1;
     justify-content: flex-end;
-    gap: 0.25rem;
+    gap: 0.75rem;
   }
 
   .nav-link {
@@ -219,6 +225,13 @@ const logout = async () => {
     }
 
     .nav-link {
+      width: 100%;
+      justify-content: center;
+      padding: 3px;
+      height: 48px;
+      width: 48px;
+    }
+    .nav-right {
       width: 100%;
       justify-content: center;
       padding: 3px;

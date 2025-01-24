@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-
 type Exercise = {
   set: any;
   repetition: any;
@@ -9,10 +8,12 @@ type Exercise = {
   seconds: any;
   minutes: any;
 };
+import {exerciseOptions} from '../utils/exerciseOptions' 
 
 const { $translate } = useNuxtApp();
 
 // Hint: add in Exercise.vue the types with minutes
+/*
 const exerciseOptions = [
   { value: "1", info:'pushUps', label:'', add:'kg'},
   { value: "2", info:'sqaut', label:'', add:'kg'},
@@ -48,6 +49,7 @@ const exerciseOptions = [
 
   // Add more options as needed
 ];
+*/
 
 const translateExerciseOptions = () => {
   return exerciseOptions.map(option => ({

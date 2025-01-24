@@ -1,10 +1,13 @@
 <script lang="ts" setup>
   import { ref } from 'vue'
   import { useNuxtApp } from '#app'
-  import { type Workout } from '../src/declarations/backend/backend.did.js';
-  import { isAuthenticated } from '../utils/helper';
-  import RemoveFriendModal from '~/components/RemoveFriendModal.vue';
+  
+  import { type Principal } from '@dfinity/principal';
+  import { isAuthenticated } from '../src/utils/helper.js';
   import type { FormSubmitEvent, TableColumn } from '@nuxt/ui';
+
+  import RemoveFriendModal from '~/src/components/RemoveFriendModal.vue';
+  import OwnWorkouts from '~/src/components/OwnWorkouts.vue';
 
   interface User {
     alias: string,
@@ -14,38 +17,36 @@
 
   interface SelectFriendItem {
     label: string,
-    principal: any
+    value: any
   }
 
   const UButton = resolveComponent('UButton');
-
   const { $translate, $getActor, $authClient } = useNuxtApp() as any;
-  const workouts = ref<Workout[]>([]);
-  const workoutsTotal = ref<number>(0);
   const isLoading = ref(true);
   const isAuth = ref(false);
   const isCheckingAuth = ref<boolean>(true);
   const user = ref<string>('');
   const friends = ref<[]>([]);
   const totalWorkouts = ref<bigint>(0n);
+  const points = ref<bigint>(0n);
   const isEditProfileFormDisabled = ref<boolean>(false);
   const isFriendsSidebarLoading = ref<boolean>(false);
-
   const friendsSidebarSelectFriendItems = ref<SelectFriendItem[]>([]);
-
   const allUsers = ref<[]>([]);
 
   const userDetailFormState = reactive({
     alias: '',
+    size: 0
   });
 
   const userFriendsFormState = reactive({
-    selectedUser: {label: '', principal: {}}
+    selectedUser: {label: '', value: ''}
   });
 
   const userFriendsTableData = ref<User[]>([]);
 
   onMounted(async () => {
+    
     try {
       isAuth.value = await isAuthenticated();
       if (!isAuth.value) {
@@ -54,26 +55,20 @@
       }
       
       const actor = await $getActor({}, true);
-      const result = await actor.getWorkoutsPerPrincipal();
-      const result2 = await actor.getUserProfile();
+      const userProfile = await actor.getUserProfile();
+      
+      if(userProfile) {
+        user.value = userProfile.alias;
+        friends.value = userProfile.friends;
+        totalWorkouts.value = userProfile.totalWorkouts;
 
-      user.value = result2.alias;
-      friends.value = result2.friends;
-      totalWorkouts.value = result2.totalWorkouts;
-
-      userDetailFormState.alias = user.value;
-
-      getUserFriends();
-
-      if(result.length === 0) {
-        isLoading.value = false;
-        return;
+        userDetailFormState.alias = user.value;
+        userDetailFormState.size = userProfile.size;
+        
+        points.value = userProfile.points;
       }
 
-      workouts.value = result;
-      workoutsTotal.value = result.length;
-      // sort the push-ups by date
-      workouts.value.sort((a, b) => Number(b.date) - Number(a.date)); 
+      getUserFriends();
 
       isLoading.value = false;
     } catch (error) {
@@ -87,58 +82,53 @@
   async function onSubmitEditUser(event: FormSubmitEvent<{alias: string}>) {
     isEditProfileFormDisabled.value = true;
     const actor = await $getActor({}, true);
-    const res = await actor.updateProfile(event.data.alias.trim());
-
-    if (res) {
-      const userProfile = await actor.getUserProfile();
-      user.value = userProfile.alias;
-      userDetailFormState.alias = user.value;
+    
+    if(isNaN(userDetailFormState.size)) {
+      userDetailFormState.size = 0;
     }
 
+    const profile = {
+      alias: event.data.alias.trim(),
+      size: userDetailFormState.size
+    };
+   
+    const res = await actor.updateProfile(profile);    
+    if (res) {
+      const userProfile = await actor.getUserProfile();
+      
+      user.value = userProfile.alias;
+      userDetailFormState.alias = user.value;
+      userDetailFormState.size = userProfile.size;
+    }
+   
     isEditProfileFormDisabled.value = false;
   }
 
+  // load select friend items
   async function loadUserFriendsSidebar() {
     isFriendsSidebarLoading.value = true;
+
     const actor = await $getActor({}, true);
     const identity = await $authClient.getIdentity();
     allUsers.value = await actor.getAllUsers();
-
+    
     const userProfile = await actor.getUserProfile();
-
     friends.value = userProfile.friends;
 
-    userFriendsFormState.selectedUser = {label: '', principal: {}};
+    userFriendsFormState.selectedUser = {label: '', value: ''};
 
-    let nonFriendUsers: SelectFriendItem[] = [];
+    const nonFriendUsers: SelectFriendItem[] = allUsers.value
+      .filter((user: User) => user.principal.toText() !== identity.getPrincipal().toText())
+      .filter((user: User) => !friends.value.some((friend: User) => friend.principal.toText() === user.principal.toText()))
+      .map((user: User) => ({
+        label: user.alias + ' (' + user.totalWorkouts + ' wo)',
+        value: user.principal.toText()
+      }));
 
-    allUsers.value.forEach(async function(user: User) {
-      // checks if its the user himself
-      if (user.principal.toText() == identity.getPrincipal().toText()) {
-        return true;
-      }
+    // sort the nonFriendUsers by alias
+    nonFriendUsers.sort((a, b) => a.label.localeCompare(b.label));
 
-      // checks if user is already a friend
-      const isAFriend = friends.value.find(function(friend: User) {
-        if (friend.principal.toText() == user.principal.toText()) {
-          return true;
-        }
-      })
-
-      if (isAFriend) {
-        return true;
-      }
-
-      const nonFriendUser: SelectFriendItem = {
-        label: user.alias,
-        principal: user.principal
-      }
-
-      nonFriendUsers.push(nonFriendUser);
-    })
-
-    friendsSidebarSelectFriendItems.value = nonFriendUsers;
-
+    friendsSidebarSelectFriendItems.value = nonFriendUsers;    
     isFriendsSidebarLoading.value = false;
   }
 
@@ -170,16 +160,17 @@
    * adds a friend
    */
   async function addFriend() {
-    if (userFriendsFormState.selectedUser.label) {
+    if (userFriendsFormState.selectedUser) {
+     
       isFriendsSidebarLoading.value = true;
       const actor = await $getActor({}, true);
-      
-      await actor.addFriend(userFriendsFormState.selectedUser.principal);
+      await actor.addFriend(userFriendsFormState.selectedUser);
 
-      userFriendsFormState.selectedUser = {label: '', principal: {}};
+      userFriendsFormState.selectedUser = {label: '', value: ''};
 
       loadUserFriendsSidebar();
       getUserFriends();
+
       isFriendsSidebarLoading.value = false;
     }
   }
@@ -187,11 +178,11 @@
   /**
    * removes a friend 
    */
-  async function removeFriend(principal: any) {
+  async function removeFriend(principal: Principal) {
     isFriendsSidebarLoading.value = true;
 
     const actor = await $getActor({}, true);
-    await actor.removeFriend(principal);
+    await actor.removeFriend(principal.toText());
     
     loadUserFriendsSidebar();
     getUserFriends();
@@ -203,12 +194,10 @@
       accessorKey: 'alias',
       header: () => $translate('profile.friends-sidebar-friend-list-header-alias'),
     },
-
     {
       accessorKey: 'totalWorkouts',
       header: () => $translate('profile.friends-sidebar-friend-list-header-workouts'),
     },
-
     {
       id: 'removeFriend',
       cell: ({ row }) => {
@@ -220,6 +209,40 @@
       }
     }
   ];
+
+  // Tabs
+  const itemTabs = ref([
+  {
+    label: 'Feed',
+    icon: 'i-lucide-rss',
+     slot: 'feed'
+  },
+  {
+    label: 'Workouts',
+    icon: 'i-lucide-dumbbell',
+    slot: 'ownWorkout'
+  }
+])
+
+const fiendsSideBarIsOpen = ref(false);
+const activeTab = ref('0');
+const closeFriendsSidebar = () => {
+  fiendsSideBarIsOpen.value = false;
+  if(activeTab.value === '0') {
+    // rerender tab 0
+    //console.log('rerender Feed');
+  } else {
+    //show feed tab
+    setTimeout(() => {
+      activeTab.value = '0';
+    }, 100);
+  }
+}
+
+const profileSideBarIsOpen = ref(false);
+const closeProfileSidebar = () => {
+  profileSideBarIsOpen.value = false;
+}
 </script>
 
 <template>
@@ -255,18 +278,19 @@
                   <span v-else>
                     {{ totalWorkouts }} {{ $translate('profile.total-workout') }}
                   </span>
+                  <span>, {{ points }} {{ $translate('profile.total-points') }}</span>
                 </div>
               </div>
             </div>
 
             <div class="mt-4">
               <div class="flex justify-between items-center">
+                <!-- add/remove friends-->
                 <USlideover 
                   :title="$translate('profile.friends-sidebar-title')"
-                  :close="{
-                    class: 'text-[25px]'
-                  }"
-                >
+                  :close="false"
+                  v-model:open="fiendsSideBarIsOpen"
+                  :description="$translate('profile.friends-sidebar-description')">
                   <UButton variant="outline" class="cursor-pointer font-bold" @click="loadUserFriendsSidebar">
                     {{ $translate('profile.your-friends') }} {{ friends.length }}
                   </UButton>
@@ -280,35 +304,36 @@
                       <div class="mb-2">
                         <UForm class="flex gap-2 items-end flex-wrap" :state="userFriendsFormState" @submit="addFriend">
                           <UFormField :label="$translate('profile.friends-sidebar-add-friend')">
-                            <USelectMenu
+                            <USelect
+                              :placeholder="friendsSidebarSelectFriendItems.length === 0 ?  $translate('profile.friends-select-noFriendsToAdd') : $translate('profile.friends-select-selectAFriend') "
                               v-model="userFriendsFormState.selectedUser"
                               :items="friendsSidebarSelectFriendItems"
-                              :search-input="{icon: 'i-lucide-search'}"
                               class="w-48"
                             />
                           </UFormField>
-
-                          <UButton type="submit" class="cursor-pointer h-[32px]">
+                          
+                          <UButton type="submit" class="cursor-pointer h-[32px]" :disabled="userFriendsFormState.selectedUser.value==''">
                             {{ $translate('profile.friends-sidebar-add-friend-button') }}
                           </UButton>
+                          <UButton color="neutral" :label="$translate('button-close')" @click="closeFriendsSidebar"/>
                         </UForm>                      
                       </div>
 
                       <div>
                         <div>
-                          <UTable class="friends-table-container" :data="userFriendsTableData" :columns="userFriendsTableColumn" />
+                          <UTable class="table-container" :data="userFriendsTableData" :columns="userFriendsTableColumn" />
                         </div>
                       </div>
                     </div>
                   </template>
                 </USlideover>
 
+                <!-- edit user profile -->
                 <USlideover 
                   :title="$translate('profile.edit-profile-sidebar-title')" 
-                  :close="{
-                    class: 'cursor-pointer text-[25px]'
-                  }"
-                >
+                  :close="false"
+                  v-model:open="profileSideBarIsOpen"
+                  :description="$translate('profile.edit-profile-sidebar-description')">
                   <UButton class="hover: cursor-pointer">
                     {{ $translate('profile.edit-profile-button') }}
                   </UButton>
@@ -320,110 +345,42 @@
 
                     <div v-else-if="!isEditProfileFormDisabled">
                       <UForm :disabled="isEditProfileFormDisabled" :state="userDetailFormState" @submit="onSubmitEditUser">
+
                         <UFormField size="lg" :label="$translate('profile.edit-profile-sidebar-alias-input-label')" :help="$translate('profile.edit-profile-sidebar-alias-input-help')" >
-                          <UInput autofocus v-model="userDetailFormState.alias"></UInput>
+                          <UInput v-model="userDetailFormState.alias" maxlength="20" />
                         </UFormField>
 
-                        <UButton :disabled="isEditProfileFormDisabled" type="submit" class=" hover:cursor-pointer">
+                        <UFormField size="lg" :label="$translate('profile.edit-profile-sidebar-size-input-label')" :help="$translate('profile.edit-profile-sidebar-size-input-help')">
+                          <UInputNumber :min="0" v-model="userDetailFormState.size" class="w-[170px]" />
+                        </UFormField>
+
+                        <UButton :disabled="isEditProfileFormDisabled" type="submit" class="cursor-pointer h-[32px] mr-[5px]">
                           {{ $translate('profile.edit-profile-sidebar-submit-button') }}
                         </UButton>
+                        <UButton color="neutral" :label="$translate('button-close')" @click="closeProfileSidebar"/>
                       </UForm>
                     </div>
                   </template>
                 </USlideover>
+
               </div>
             </div>
           </div>  
+         
+          <UTabs v-model="activeTab" class="w-full" :items="itemTabs">
+            <template #feed>
+              <Feed />
+            </template>
 
-        <div v-if="workouts.length === 0">
-          <h1>{{ $translate('workout.list-title2') }}</h1>
-          <div>{{ $translate ('workout.list-empty') }}</div>
-        </div>
-        <div v-else class="workout-list">
-          <h1>{{ $translate('workout.list-title2') }}</h1>
-          <div class="hello">{{ replaceCount($translate('workout.hello'),'__workoutsTotal__', workoutsTotal) }}</div>
-            <ol>
-              <li v-for="(workout, index) in workouts" :key="index" class="workout-item">
-              
-                <div class="workout-details">
-                  
-                  <span class="workout-date">{{ $translate ('workout.at') }} {{ formatDate(workout.date) }}</span>
-                  
-                  <div v-if="workout.exercises && workout.exercises.length > 0" class="execution-details">
-                    <h3>{{ $translate('workout.executionDetails') }}</h3>
-                    <ul>
-                      <Exercise v-for="(exercise, index) in workout.exercises" :key="index" :exercise="exercise" />
-                    </ul>
-                  </div>
+            <template #ownWorkout>
+              <OwnWorkouts />
+            </template>
+          </UTabs>
 
-                </div>
-              </li>
-            </ol>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style>
-  .friends-table-container table th, .friends-table-container table td {
-    text-align: center;
-  }
-</style>
-
-<style scoped>
-
-  ol {
-    padding-left: 0px;
-  }
-  
-  .workout-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .workout-item {
-    display: flex;
-    flex-direction: column;
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-  }
-
-  .workout-details {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .workout-user,
-  .workout-date {
-    font-size: 0.9rem;
-    color: #666;
-  }
-  .execution-details {
-    margin-top: 0.5rem;
-  }
-
-  .execution-details h3 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: bold;
-  }
-
-  .execution-details ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    margin-top: 0.25rem;
-  }
-
-  .execution-details li {
-    font-size: 0.9rem;
-    color: #333;
-    margin-left: 0.5rem;
-  }
-
 </style>

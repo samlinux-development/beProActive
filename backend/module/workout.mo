@@ -18,6 +18,9 @@ module {
   let StateTypes = MigrationTypes.Current;
 
   // add a new workout to the user's workout map
+  // ranking rules:
+  // 10 points per Workout
+  // 1 point per exercise
   public func addWorkout(
     caller:Principal, 
     workout: StateTypes.WorkoutPayload, 
@@ -36,7 +39,6 @@ module {
             date = Time.now();
             duration = workout.duration;
             exercises = workout.exercises;
-            likes = [var];
           };
 
           let newWorkoutCount:Nat = Map.size(w.workouts)+1;
@@ -45,6 +47,10 @@ module {
 
           // add latest workout
           let _r = await addLatestWorkout(caller, newWorkout, latestWorkout, users, newWorkoutCount, maxPublicWorkouts);
+
+          // add the points to the user
+          let _r2 = addPoints(caller, newWorkout, users);
+
         };
         case (null) {
           //Debug.print("Workout not found for user");
@@ -62,7 +68,6 @@ module {
         date = Time.now();
         duration = workout.duration;
         exercises = workout.exercises;
-        likes = [var];
       };
       // store the new workout
       Map.set(w, nhash, 1, newWorkout);
@@ -77,9 +82,45 @@ module {
       // add latest workout
       let _r = await addLatestWorkout(caller, newWorkout, latestWorkout, users, 1, maxPublicWorkouts);
 
+      // add the points to the user
+      let _r2 = addPoints(caller, newWorkout, users);
+      
       //Debug.print("First Workout added");
       return true;
     }
+  };
+
+  // add points to a user
+  func addPoints(caller:Principal, newWorkout:StateTypes.Workout, users: Map.Map<Principal, StateTypes.User>): Bool{
+   
+    let user = Map.get(users, phash, caller);
+    switch (user) {
+      case (?u) {
+        let points = calcPoints(newWorkout);
+        let newPoints = u.points + points;
+        let newUser:StateTypes.User = {
+          alias = u.alias;
+          size = u.size;
+          friends = u.friends;
+          points = newPoints;
+        };
+        Map.set(users, phash, caller, newUser);
+        return true;
+      };
+      case (null) {
+        return false;
+      };
+    };
+  };
+
+  // calculate points for a workout for a user
+  func calcPoints(workout:StateTypes.Workout):Nat{
+    // Base points = 10
+    var totalPoints = 10;
+
+    // Add 1 point per exercise
+    totalPoints += Array.size(workout.exercises);
+    totalPoints;
   };
 
   // and latest workout and removes the oldest if the max size is reached
@@ -229,5 +270,4 @@ module {
     Buffer.toArray(buffer);
   };
 
-  
 }

@@ -33,6 +33,7 @@ module {
 
   public type User = {
     alias : Text;
+    size: Nat16;
     friends : Map.Map<Principal,Text>;
     points: Nat;
   };

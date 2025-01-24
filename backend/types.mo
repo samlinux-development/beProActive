@@ -2,6 +2,7 @@ import MigrationTypes "./migrations/types";
 
 import Time "mo:base/Time";
 import Nat "mo:base/Nat";
+import Nat16 "mo:base/Nat16";
 import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 
@@ -27,6 +28,7 @@ module {
 
   public type GetUserProfileResponse = {
     alias: Text;
+    size:Nat16;
     friends: [Friend];
     totalWorkouts: Nat;
     points: Nat;
@@ -48,5 +50,29 @@ module {
     alias:Text;
     totalWorkouts:Nat;
     points:Nat;
+  };
+
+  public type GetRankingResponse = {
+    alias:Text;
+    totalWorkouts:Nat;
+    points:Nat;
+  };
+
+  public type GetUserFeedResponse = {
+    alias: Text;
+    date: Time.Time;
+    duration: Time.Time;
+    exercises : [StateTypes.Exercise];
+  };
+
+  public type GetAllUserDataResponse = {
+    principal:Principal;
+    userProfile:GetUserProfileResponse;
+    workouts:[WorkoutsPerUserResponse];
+  };
+
+  public type UpdateProfile = {
+    alias: Text;
+    size: Nat16;
   };
 };

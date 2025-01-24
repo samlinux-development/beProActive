@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { ref } from 'vue'
-  import { isAuthenticated } from '../utils/helper';
+  import { isAuthenticated } from '../src/utils/helper';
 
 interface Exercise {
   'kg' : number,
@@ -12,7 +12,6 @@ interface Exercise {
 }
 
   const { $translate, $getActor } = useNuxtApp();
-
   const isLoading = ref<boolean>(false);
   const isAuth = ref(false);
   const isCheckingAuth = ref<boolean>(true);
@@ -22,10 +21,8 @@ interface Exercise {
   }
 
   let executionListRef = ref<ExecutionList | null>(null);
-  const showModal = ref<boolean>(false);
 
   const addExercise = async () => {
-
     try {
       isLoading.value = true;
       const executions = executionListRef.value?.executions || [];
@@ -74,15 +71,11 @@ interface Exercise {
   });
 
   const openModal = () => {
-    showModal.value = true;
-  };
-
-  const closeModal = () => {
-    showModal.value = false;
+    modalSideBarIsOpen.value = true;
   };
 
   const confirmAddExercise = () => {
-    closeModal();
+    closeModalSidebar();
     addExercise();
   };
 
@@ -102,6 +95,11 @@ interface Exercise {
     }
   });
 
+  const modalSideBarIsOpen = ref(false);
+  const closeModalSidebar = () => {
+    modalSideBarIsOpen.value = false;
+  }
+
 </script>
 
 <template>
@@ -120,12 +118,10 @@ interface Exercise {
         <ExecutionList ref="executionListRef"/>
 
         <UModal 
+          v-model:open="modalSideBarIsOpen"
           :title="$translate('workout.confirm-title')"
-          :close="{
-            color: 'error',
-            variant: 'outline',
-            class: 'rounded-full'
-          }">
+          :close="false"
+          :description="$translate('workout.confirm-text')">
           <UButton 
             icon="i-lucide-git-graph" 
             :disabled="isLoading || !isFormValid" 
@@ -137,9 +133,11 @@ interface Exercise {
           </UButton>
 
           <template #body>
-            {{$translate('workout.confirm-text')}}
             <div class="modal-actions">
               <UButton @click="confirmAddExercise">{{ $translate('workout.confirm-yes') }}</UButton>  
+              <UButton color="neutral" @click="closeModalSidebar">
+                {{ $translate('profile.friends-sidebar-remove-friend-modal-cancel-button') }}
+              </UButton>
             </div>
           </template>
         </UModal>

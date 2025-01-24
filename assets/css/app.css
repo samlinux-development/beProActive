@@ -49,3 +49,64 @@ button:disabled {
 .hello {
   margin-bottom: 1rem;
 }
+
+ol {
+  padding-left: 0px;
+}
+
+.workout-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.workout-item {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.workout-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.workout-user,
+.workout-date {
+  font-size: 0.9rem;
+  color: #666;
+}
+.execution-details {
+  margin-top: 0.5rem;
+}
+
+.execution-details h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.execution-details ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 0.25rem;
+}
+
+.execution-details li {
+  font-size: 0.9rem;
+  color: #333;
+  margin-left: 0.5rem;
+}
+
+.table-container table th:first-child, .table-container table td:first-child {
+  text-align: left;
+}
+.table-container table th, .table-container table td {
+  text-align: center;
+  padding: 5px;
+}

@@ -9,14 +9,15 @@ export interface Exercise {
   'typeOfExercise' : number,
   'repetition' : number,
 }
-export interface Feed {
-  'workouts' : Array<[bigint, Workout]>,
-  'alias' : string,
-}
 export interface Friend {
   'principal' : Principal,
   'alias' : string,
   'totalWorkouts' : bigint,
+}
+export interface GetAllUserDataResponse {
+  'principal' : Principal,
+  'workouts' : Array<WorkoutsPerUserResponse>,
+  'userProfile' : GetUserProfileResponse,
 }
 export interface GetAllUsersResponse {
   'principal' : Principal,
@@ -25,8 +26,20 @@ export interface GetAllUsersResponse {
   'points' : bigint,
 }
 export interface GetPublicReportsResponse { 'totalUsers' : bigint }
+export interface GetRankingResponse {
+  'alias' : string,
+  'totalWorkouts' : bigint,
+  'points' : bigint,
+}
+export interface GetUserFeedResponse {
+  'duration' : Time,
+  'alias' : string,
+  'date' : Time,
+  'exercises' : Array<Exercise>,
+}
 export interface GetUserProfileResponse {
   'alias' : string,
+  'size' : number,
   'totalWorkouts' : bigint,
   'friends' : Array<Friend>,
   'points' : bigint,
@@ -43,9 +56,10 @@ export interface LatestWorkouts {
   'exercises' : Array<Exercise>,
 }
 export interface Main {
-  'addFriend' : ActorMethod<[Principal], boolean>,
+  'addFriend' : ActorMethod<[string], boolean>,
   'addWorkout' : ActorMethod<[WorkoutPayload], boolean>,
   'createUserProfile' : ActorMethod<[], boolean>,
+  'getAllUserData' : ActorMethod<[Principal], [] | [GetAllUserDataResponse]>,
   'getAllUsers' : ActorMethod<[], Array<GetAllUsersResponse>>,
   'getAllWorkouts' : ActorMethod<
     [],
@@ -53,15 +67,18 @@ export interface Main {
   >,
   'getLatestWorkouts' : ActorMethod<[], Array<[bigint, LatestWorkouts]>>,
   'getPublicReports' : ActorMethod<[], GetPublicReportsResponse>,
-  'getUserFeed' : ActorMethod<[], Array<[Principal, Feed]>>,
+  'getRanking' : ActorMethod<[], Array<GetRankingResponse>>,
+  'getUserFeed' : ActorMethod<[], Array<GetUserFeedResponse>>,
   'getUserProfile' : ActorMethod<[], GetUserProfileResponse>,
   'getWorkoutReports' : ActorMethod<[number], GetWorkoutReportsResponse>,
   'getWorkoutsPerPrincipal' : ActorMethod<[], Array<WorkoutsPerUserResponse>>,
-  'removeFriend' : ActorMethod<[Principal], boolean>,
+  'removeFriend' : ActorMethod<[string], boolean>,
+  'removeUser' : ActorMethod<[Principal], boolean>,
   'setMaxPublicWorkouts' : ActorMethod<[bigint], boolean>,
-  'updateProfile' : ActorMethod<[string], boolean>,
+  'updateProfile' : ActorMethod<[UpdateProfile], boolean>,
 }
 export type Time = bigint;
+export interface UpdateProfile { 'alias' : string, 'size' : number }
 export interface Workout {
   'duration' : Time,
   'date' : Time,
