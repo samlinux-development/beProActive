@@ -1,3 +1,5 @@
 <template>
    <Workouts />
+   <Footer />
 </template>
+

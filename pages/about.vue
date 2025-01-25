@@ -1,12 +1,12 @@
 <script setup lang="ts">
 const { $translate } = useNuxtApp();
-
 </script>
 <template>
   <h1>{{ $translate ('about.title') }}</h1>
   <img class="image" src="/beActive.webp" alt="Be ProActive"/>
   <div>{{ $translate ('about.info') }}</div>
   <div v-html="$translate ('about.stayTuned')"></div>
+  <Footer/>
 </template>
 
 <style scoped>

@@ -146,6 +146,7 @@ interface Exercise {
       <div v-if="isLoading"> <Spinner /> </div>  
     </div>
   </div>
+  <Footer/>
 </template>
 
 <style scoped>

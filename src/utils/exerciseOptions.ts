@@ -41,6 +41,7 @@ export const exerciseOptions = [
   { value: "34", info:'pilates', label:'', add:'minutes'},
   { value: "35", info:'pullup', label:'', add:'kg'},
   { value: "36", info:'chinup', label:'', add:'kg'},
+  { value: "37", info:'shoulderMobility', label:'', add:'kg'},
   
 
 

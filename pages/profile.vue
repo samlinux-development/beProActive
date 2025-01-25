@@ -380,6 +380,7 @@ const closeProfileSidebar = () => {
       </div>
     </div>
   </div>
+  <Footer/>
 </template>
 
 <style>

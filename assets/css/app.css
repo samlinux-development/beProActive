@@ -110,3 +110,18 @@ ol {
   text-align: center;
   padding: 5px;
 }
+
+ /* Media query for smaller screens */
+ @media (max-width: 600px) {
+  div {
+    font-size: 1.1rem;
+  }
+
+  .table-container table th, .table-container table td {
+    font-size: 1rem;
+  }
+
+  .workout-date {
+    font-size: 1rem;
+  }
+ }
