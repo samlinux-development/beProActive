@@ -91,9 +91,9 @@ const logout = async () => {
         <ol>
           <div class="left-nav">
             <li>
-              <router-link to="/" class="nav-link" @click="modalSideBarIsOpen = true">
+              <button class="nav-link" @click.prevent="modalSideBarIsOpen = true">
                 <Icon name="i-lucide-menu" class="icon" />
-              </router-link>
+              </button>
             </li>
             <USlideover 
               :title="$translate('navigation.title')"

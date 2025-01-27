@@ -8,7 +8,7 @@
     "deploy-playground": "DFX_NETWORK=playground npm run extract-id && nuxt generate && dfx deploy --playground",
     "deploy-local": "DFX_NETWORK=local npm run extract-id && nuxt generate && dfx deploy",
     "build": "npm run extract-id && nuxt generate",
-    "dev": "DFX_NETWORK=local npm run extract-id  && nuxt dev",
+    "dev": "DFX_NETWORK=local npm run extract-id && nuxt cleanup && nuxt dev ",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
