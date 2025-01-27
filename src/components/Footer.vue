@@ -8,9 +8,6 @@ const frontendBuild = config.public.frontendBuild;
 <template>
   <footer class="footer">
     <div class="container">
-      <div class="footer-refresh">
-        <PwaRefresh />
-      </div>
       <div class="footer-content">
         {{ $translate('about.frontendBuild') }}: {{ frontendBuild }} {{ $translate('about.copyright') }}  {{ new Date().getFullYear() }}
       </div>

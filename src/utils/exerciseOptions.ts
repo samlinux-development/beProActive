@@ -35,15 +35,18 @@ export const exerciseOptions = [
   { value: "28", info:'swimming', label:'', add:'minutes'},
   { value: "29", info:'burpees', label:'', add:'minutes'},
   { value: "30", info:'walking', label:'', add:'minutes'},
-  { value: "31", info:'mountain_climber', label:'', add:'minutes'},
-  { value: "32", info:'high_knees', label:'', add:'minutes'},
-  { value: "33", info:'lunges', label:'', add:'minutes'},
+  { value: "31", info:'mountain_climber', label:'', add:'kg'},
+  { value: "32", info:'high_knees', label:'', add:'kg'},
+  { value: "33", info:'lunges', label:'', add:'kg'},
   { value: "34", info:'pilates', label:'', add:'minutes'},
   { value: "35", info:'pullup', label:'', add:'kg'},
   { value: "36", info:'chinup', label:'', add:'kg'},
-  { value: "37", info:'shoulderMobility', label:'', add:'kg'},
+  { value: "37", info:'shoulder_mobility', label:'', add:'minutes'},
+  { value: "38", info:'hip_mobility', label:'', add:'minutes'},  
+  { value: "39", info:'back_mobility', label:'', add:'minutes'},
+  { value: "40", info:'australian_pullup', label:'', add:'kg'},
+  { value: "41", info:'single_leg_stance', label:'', add:'minutes'}
   
-
 
 ];
 

@@ -2,19 +2,25 @@
 
 import { useNuxtApp, useRouter, useRuntimeConfig } from '#app';
 
-// Define public links
 const nav = [
   { label: 'Home', to: '/', icon: 'mdi:book-open-blank-variant-outline' },
   { label: 'About', to: '/about', icon: 'mdi:information-slab-circle-outline' },
-];
+  {
+      label: 'GitHub',
+      icon: 'i-simple-icons-github',
+      to: 'https://github.com/samlinux-development/beProActive',
+      target: '_blank'
+    }
+  ];
 
 const { $getActor } = useNuxtApp();
 let { $authClient } = useNuxtApp() as any;
-const { $maxTimeToLiveNs } = useNuxtApp();
+const { $maxTimeToLiveNs, $translate } = useNuxtApp();
 const isLoading = ref(false);
 
 const config = useRuntimeConfig();
 const isLoggedIn = ref(false);
+const modalSideBarIsOpen = ref(false);
 
 const router = useRouter();
 
@@ -84,17 +90,57 @@ const logout = async () => {
       <nav class="navigation sticky-top">
         <ol>
           <div class="left-nav">
-            <li v-for="(item, index) in nav" :key="index">
-              <router-link :to="item.to" class="nav-link">
-                <Icon :name="item.icon" class="icon" />
+            <li>
+              <router-link to="/" class="nav-link" @click="modalSideBarIsOpen = true">
+                <Icon name="i-lucide-menu" class="icon" />
               </router-link>
             </li>
+            <USlideover 
+              :title="$translate('navigation.title')"
+              :close="{
+                color: 'primary',
+                variant: 'outline',
+                class: 'rounded-full'
+              }"
+              v-model:open="modalSideBarIsOpen"
+              :description="$translate('navigation.desc')" >
+            
+              <template #body >
+                <div class="sidebar-nav" >
+                  <div v-for="(item, index) in nav" :key="index">
+
+                    <router-link  v-if="!item.target" :to="item.to" @click="modalSideBarIsOpen = false" class="nav-link">
+                      <div class="ml-6 flex flex-row items-center gap-2">
+                        <div>
+                          <Icon :name="item.icon" class="icon" />
+                        </div>
+                        <div>
+                          {{ item.label }}
+                        </div>
+                      </div>
+                    </router-link>
+
+                    <a v-else target="_blank" :href="item.to" @click="modalSideBarIsOpen = false" class="nav-link">
+                      <div class="ml-6 flex flex-row items-center gap-2">
+                        <div>
+                          <Icon :name="item.icon" class="icon" />
+                        </div>
+                        <div>
+                          {{ item.label }}
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </template>
+
+            </USlideover>
           </div>
 
           <div class="center-nav add-button" v-if="isLoggedIn">
             <li v-if="isLoggedIn" class="nav-link">
               <router-link to="/add" class="nav-link">
-                <Icon name="mdi:plus-box" class="icon" />
+                <Icon name="i-lucide-square-plus" class="icon" />
               </router-link> 
             </li>
           </div>
@@ -102,24 +148,27 @@ const logout = async () => {
           <div class="right-nav" >
             <li class="nav-link" v-if="isLoggedIn">
               <router-link to="/profile" class="nav-link">
-                <Icon name="mdi:account" class="icon" />
+                <Icon name="i-lucide-user" class="icon" />
               </router-link>
             </li>
 
             <li class="nav-link" v-if="isLoggedIn">
               <button @click="logout" class="nav-link">
-                <Icon name="mdi:logout" class="icon" />
+                <Icon name="i-lucide-log-out" class="icon" />
               </button>
             </li>
             <li v-else class="nav-link">
               <button @click="login" class="nav-link">
-                <Icon name="mdi:login-variant" class="icon"/>
+                <Icon name="i-lucide-log-in" class="icon"/>
               </button>
             </li>  
           </div>
 
         </ol>
       </nav>
+      <div class="text-center">
+        <PwaRefresh />
+      </div>
     </div>
 </template>
 
@@ -131,6 +180,8 @@ const logout = async () => {
 
   .navigation {
     background-color: #f8f9fa;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 1000;
@@ -151,21 +202,26 @@ const logout = async () => {
     width: 100%;
   }
 
-  .left-nav,
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;  
+    gap: 0.75rem;
+    
+  }
+  .left-nav {
+    display: flex;
+    justify-content: left;
+  }
   .center-nav,
   .right-nav {
     display: flex;
     align-items: center;
+    justify-content: center;
   }
 
   .right-nav .nav-link {
-    height: 48px;
-    width: 48px;
-  }
-
-  .right-nav .nav-link {
-    height: 48px;
-    width: 48px;
+    height: 38px;
+    width: 38px;
   }
   
   .right-nav .nav-link button.nav-link {
@@ -191,13 +247,12 @@ const logout = async () => {
 
   .nav-link {
     text-decoration: none;
-    color: #007bff;
-    padding: 0.5rem;
+    color: gray;
+    padding: 0.2rem;
     border-radius: 4px;
     transition: background-color 0.3s, color 0.3s;
     display: flex;
     align-items: center;
-    justify-content: center;
     background: none;
     border: none;
     cursor: pointer;
@@ -205,15 +260,11 @@ const logout = async () => {
 
   .nav-link:hover {
     background-color: #e2e6ea;
-    color: #0056b3;
-  }
-
-  .add-button .nav-link {
-    padding: 0rem; 
+    color: gray;
   }
 
   .add-button .icon {
-    font-size: 5rem; 
+    font-size: 4rem; 
   }
 
   /* Media query for smaller screens */
@@ -224,13 +275,6 @@ const logout = async () => {
       gap: 1rem;
     }
 
-    .nav-link {
-      width: 100%;
-      justify-content: center;
-      padding: 3px;
-      height: 48px;
-      width: 48px;
-    }
     .nav-right {
       width: 100%;
       justify-content: center;

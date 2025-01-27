@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { ref } from 'vue'
+  import { ref, useTemplateRef } from 'vue'
   import { useNuxtApp } from '#app'
   
   import { type Principal } from '@dfinity/principal';
@@ -10,14 +10,11 @@
   import OwnWorkouts from '~/src/components/OwnWorkouts.vue';
 
   interface User {
-    alias: string,
-    principal: any,
-    totalWorkouts?: bigint
+    alias: string, principal: any, totalWorkouts?: bigint
   }
 
   interface SelectFriendItem {
-    label: string,
-    value: any
+    label: string, value: any
   }
 
   const UButton = resolveComponent('UButton');
@@ -35,8 +32,7 @@
   const allUsers = ref<[]>([]);
 
   const userDetailFormState = reactive({
-    alias: '',
-    size: 0
+    alias: '', size: 0
   });
 
   const userFriendsFormState = reactive({
@@ -46,7 +42,6 @@
   const userFriendsTableData = ref<User[]>([]);
 
   onMounted(async () => {
-    
     try {
       isAuth.value = await isAuthenticated();
       if (!isAuth.value) {
@@ -71,6 +66,7 @@
       getUserFriends();
 
       isLoading.value = false;
+
     } catch (error) {
       console.error("Error fetching workouts per principal:", error);
     }
@@ -210,19 +206,18 @@
     }
   ];
 
-  // Tabs
   const itemTabs = ref([
-  {
-    label: 'Feed',
-    icon: 'i-lucide-rss',
-     slot: 'feed'
-  },
-  {
-    label: 'Workouts',
-    icon: 'i-lucide-dumbbell',
-    slot: 'ownWorkout'
-  }
-])
+    {
+      label: 'Feed',
+      icon: 'i-lucide-rss',
+      slot: 'feed'
+    },
+    {
+      label: 'Workouts',
+      icon: 'i-lucide-dumbbell',
+      slot: 'ownWorkout'
+    }
+  ]);
 
 const fiendsSideBarIsOpen = ref(false);
 const activeTab = ref('0');
@@ -243,6 +238,15 @@ const profileSideBarIsOpen = ref(false);
 const closeProfileSidebar = () => {
   profileSideBarIsOpen.value = false;
 }
+
+// remove focus from input field
+const firstInput = useTemplateRef('firstInput')
+watch(profileSideBarIsOpen, () => {
+  setTimeout(() => {
+    firstInput.value?.inputRef?.blur();
+  }, 100);
+});
+
 </script>
 
 <template>
@@ -347,7 +351,7 @@ const closeProfileSidebar = () => {
                       <UForm :disabled="isEditProfileFormDisabled" :state="userDetailFormState" @submit="onSubmitEditUser">
 
                         <UFormField size="lg" :label="$translate('profile.edit-profile-sidebar-alias-input-label')" :help="$translate('profile.edit-profile-sidebar-alias-input-help')" >
-                          <UInput v-model="userDetailFormState.alias" maxlength="20" />
+                          <UInput v-model="userDetailFormState.alias" maxlength="20" ref="firstInput"/>
                         </UFormField>
 
                         <UFormField size="lg" :label="$translate('profile.edit-profile-sidebar-size-input-label')" :help="$translate('profile.edit-profile-sidebar-size-input-help')">
@@ -366,7 +370,7 @@ const closeProfileSidebar = () => {
               </div>
             </div>
           </div>  
-         
+          <!-- tabs feed and ownworkouts -->
           <UTabs v-model="activeTab" class="w-full" :items="itemTabs">
             <template #feed>
               <Feed />
@@ -382,6 +386,3 @@ const closeProfileSidebar = () => {
   </div>
   <Footer/>
 </template>
-
-<style>
-</style>

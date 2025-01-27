@@ -9,7 +9,9 @@ export default defineNuxtPlugin((nuxtApp) => {
       'index.title': 'Be ProActive',
       'index.hello': 'Check out the newest workout warriors crushing their fitness goals! 💪 Are you ready to join the leaderboard with your own epic sessions?',
       'index.hello2': 'Help to grow the community by sharing your workout achievements! Train with __totalUsers__ other fitness enthusiasts and inspire each other to reach new heights! 🏋️‍♂️',
-      'pwa.refresh-button': 'New content available, click to update',
+      'pwa.refresh-button': 'New version available, click to update',
+      'navigation.title': 'Be ProActive',
+      'navigation.desc': 'Track your daily workouts and share them with the community and your friends. Stay motivated and inspire others to crush their goals!',
       'workout.title': 'Add new workout',
       'workout.desc': 'Stay Inspired: Discover the latest public workouts completed by our fitness community. See how others are crushing their goals and get motivated to tackle yours!',
       'workout.count': 'Workout performed',
@@ -40,7 +42,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       'about.info2': 'This dApp is powered by IcAcademy, a part of the samlinux development team. We are a group of developers who are passionate about building on the Internet Computer and sharing our knowledge with the community.',
       'about.stayTuned': 'Stay in the loop with the latest development updates! 🚀 Follow me on <a target="_blank" href="https://x.com/samlinux/status/1874778087377994099">X</a> for real-time progress, or subscribe to our <a target="_blank" href="https://oc.app/community/gmf6e-caaaa-aaaar-beepq-cai/channel/230301923274756934814897448075398376070">OpenChat channel</a> to stay connected. 💬✨',
       'about.frontendBuild': 'Build',
-      'about.copyright': 'by IcAcademy and SDG - samlinux development group',
+      'about.copyright': 'by IcAcademy / SDG - samlinux development group',
       'auth.pleaseLoginTitle': 'Please log in',
       'auth.pleaseLoginMessage': 'Access to this page requires to log in with your Internet Identity. Let’s get you started! 🚀',
       'profile.your-friends': 'Your friends:',
@@ -111,6 +113,10 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.typeOfExercise35':'Pull-ups',
       'workout.typeOfExercise36':'Chin-ups',
       'workout.typeOfExercise37':'Shoulder Mobility',
+      'workout.typeOfExercise38':'Hip Mobility',
+      'workout.typeOfExercise39':'Back Mobility',
+      'workout.typeOfExercise40':'Australian Pull-up',
+      'workout.typeOfExercise41':'Single-leg Stance',
 
     };
     return translations[key] || key;
