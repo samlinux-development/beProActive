@@ -109,9 +109,13 @@ export default defineNuxtConfig({
     
   },
   security: {
+    removeLoggers: false,
     headers: {
       crossOriginEmbedderPolicy: 'require-corp',
-      crossOriginOpenerPolicy: 'same-origin'
+      crossOriginOpenerPolicy: 'same-origin',
+      contentSecurityPolicy: {
+        'script-src': ['\'self\'', 'https:', '\'strict-dynamic\'', '\'nonce-{{nonce}}\'', '\'wasm-unsafe-eval\''],
+      },
     },
   },
 })

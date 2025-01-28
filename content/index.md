@@ -1,11 +1,11 @@
 ---
 date: 2025-01-27
-title: What the hack is BeProActive?
+title: What is BeProActive?
 ---
 ## BeProActive
 A fully featured application emerged from a simple holiday project.
 
-![BeProActive](./beproactive.webp)
+![BeProActive](/beProActive.webp)
 
 **BeProActive** is an attempt to develop a fitness and health tracking application on the Internet Computer with the goal of complete anonymity of its users.
 

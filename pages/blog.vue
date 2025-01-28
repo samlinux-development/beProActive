@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const allPosts = await queryCollection('blog').order('date', 'DESC').all();
-console.log(allPosts);
+//console.log(allPosts);
 const { $translate } = useNuxtApp();
 
 useSeoMeta({
