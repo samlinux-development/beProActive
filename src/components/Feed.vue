@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { type GetUserFeedResponse } from '../declarations/backend/backend.did.js';
-  import { formatDate } from '../utils/helper.js';
+  import { formatDate, formatDuration } from '../utils/helper.js';
 
   const { $translate, $getActor } = useNuxtApp() as any;
   const workouts = ref<GetUserFeedResponse[]>([]);
@@ -32,8 +32,17 @@
       <ol>
         <li v-for="(workout, index) in workouts" :key="index" class="workout-item">
           <div class="workout-details">
+
+            <div class="workout-date flex flex-row items-center">
+              <div>{{ $translate ('workout.at') }} {{ formatDate(workout.date) }} by {{ workout.alias }} </div>
+              <div v-if="workout.duration > 0" class="flex flex-row items-center">  
+                <div class="pl-1 pr-0.5"><Icon name="i-lucide-timer" class="icon" /> </div>
+                <div>{{ formatDuration(workout.duration) }}</div>
+              </div>
+            </div>
+            <!--
             <span class="workout-date">{{ $translate ('workout.at') }} {{ formatDate(workout.date) }} by {{ workout.alias }}</span>
-            
+            -->
             <div v-if="workout.exercises && workout.exercises.length > 0" class="execution-details">
               <h3>{{ $translate('workout.executionDetails') }}</h3>
               <ul>
@@ -46,3 +55,8 @@
       </ol>
   </div>
 </template>
+<style scoped>
+.icon {
+  font-size: 1.2rem;
+}
+</style>

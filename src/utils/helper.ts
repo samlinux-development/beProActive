@@ -39,3 +39,20 @@ export const isAuthenticated = async (): Promise<boolean> => {
   }
 } 
 
+export const formatDuration = (milliseconds: bigint) => {
+  const seconds = Math.floor(Number(milliseconds) / 1000);
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+  // output format is hh:mm:ss print only values are available
+  if(hours === 0 && minutes === 0) {
+    return `${remainingSeconds}s`;
+  }
+  else if (hours === 0) {
+    return `${minutes}m ${remainingSeconds}s`;
+  }
+  else {
+    return `${hours}h ${minutes}m ${remainingSeconds}s`;
+  }
+};
+

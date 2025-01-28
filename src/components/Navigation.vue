@@ -1,20 +1,8 @@
 <script setup lang="ts">
 
-import { useNuxtApp, useRouter, useRuntimeConfig } from '#app';
-
-const nav = [
-  { label: 'Home', to: '/', icon: 'mdi:book-open-blank-variant-outline' },
-  { label: 'About', to: '/about', icon: 'mdi:information-slab-circle-outline' },
-  {
-      label: 'GitHub',
-      icon: 'i-simple-icons-github',
-      to: 'https://github.com/samlinux-development/beProActive',
-      target: '_blank'
-    }
-  ];
+import { useNuxtApp, useRuntimeConfig } from '#app';
 
 const { $getActor } = useNuxtApp();
-let { $authClient } = useNuxtApp() as any;
 const { $maxTimeToLiveNs, $translate } = useNuxtApp();
 const isLoading = ref(false);
 
@@ -22,7 +10,20 @@ const config = useRuntimeConfig();
 const isLoggedIn = ref(false);
 const modalSideBarIsOpen = ref(false);
 
-const router = useRouter();
+let { $authClient } = useNuxtApp() as any;
+
+let nav = ref([
+  { id:'home', label: $translate('navigation.menu.home'), to: '/', icon: 'mdi:book-open-blank-variant-outline' },
+  { id:'leaderboard', label: $translate('navigation.menu.leaderboard'), to: '/?t=lb', icon: 'i-lucide-chart-no-axes-combined' },
+  { id:'about', label: $translate('navigation.menu.about'), to: '/about', icon: 'mdi:information-slab-circle-outline' },
+  {
+    id:'github',
+    label: $translate('navigation.menu.github'),
+    icon: 'i-simple-icons-github',
+    to: 'https://github.com/samlinux-development/beProActive',
+    target: '_blank'
+  }
+]);
 
 let iicanisterId = config.public.network === 'local'
   ? `http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943`
@@ -31,6 +32,11 @@ let iicanisterId = config.public.network === 'local'
 onMounted(async () => {
   // Check if the user is already logged in
   await checkLoginStatus();
+
+  if(isLoggedIn.value) {
+    // add internal links
+    addInternalLinks();
+  }
 });
 
 /**
@@ -52,8 +58,14 @@ const login = async () => {
         // check or create user profile
         await actor.createUserProfile();
         isLoading.value = false;
+
+        // add internal links
+        addInternalLinks();
+    
         // Redirect to the profile page after login
-        router.push({ path: '/profile' });
+        setTimeout(() => {
+          navigateTo('/profile');
+        }, 100);
       },
     });
   } catch (error) {
@@ -78,8 +90,24 @@ const logout = async () => {
   await $authClient.logout();
 
   isLoggedIn.value = false;
+
+  // remove internal links
+  removeInternalLinks();
+
   await $getActor({},true);
-  router.push('/');
+  navigateTo('/');
+};
+
+const addInternalLinks = () => {
+  nav.value.push({ id:'add', label: $translate('navigation.menu.addWorkout'), to: '/add', icon: 'i-lucide-square-plus' });
+  nav.value.push({ id:'profile', label: $translate('navigation.menu.profile'), to: '/profile', icon: 'i-lucide-user' });
+};
+
+const removeInternalLinks = () => {
+  nav.value = nav.value.filter(item => 
+    item.id !== 'add' && 
+    item.id !== 'profile'
+  );
 };
 
 </script>

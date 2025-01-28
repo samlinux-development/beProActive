@@ -45,7 +45,8 @@ export const exerciseOptions = [
   { value: "38", info:'hip_mobility', label:'', add:'minutes'},  
   { value: "39", info:'back_mobility', label:'', add:'minutes'},
   { value: "40", info:'australian_pullup', label:'', add:'kg'},
-  { value: "41", info:'single_leg_stance', label:'', add:'minutes'}
+  { value: "41", info:'single_leg_stance', label:'', add:'minutes'},
+  { value: "42", info:'knee_push_ups', label:'', add:'kg'},
   
 
 ];

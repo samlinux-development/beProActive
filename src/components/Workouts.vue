@@ -2,11 +2,11 @@
 import { ref } from 'vue'
 import { useNuxtApp } from '#app'
 import { replaceCount } from '../utils/helper';
-
 const { $translate, $getActor } = useNuxtApp();
 
 const isLoading = ref(true);
 const totalUsers = ref<number>(0);
+const route = useRoute();
 
 onMounted(async () => {
   try {
@@ -33,7 +33,21 @@ const itemTabs = ref([
     slot: 'ranking'
   }
 ])
-const activeTab = ref('0');
+
+const activeTab = ref(route.query.t === 'lb' ? '1' : '0');
+
+watch(
+  () => route.query.t,
+  (newT, oldT) => {
+    //console.log('Query parameter t changed from', oldT, 'to', newT);
+    if (newT === 'lb') {
+      activeTab.value = '1';
+    } else {
+      activeTab.value = '0';
+    }
+  }
+);
+
 </script>
 
 <template>

@@ -98,7 +98,6 @@ defineExpose({ executions });
       <div class="execution-labels">
         <label for="typeOfExercise">{{$translate ('workout.typeOfExercise')}}</label>
       </div>
-      
       <div v-for="(execution, index) in executions" :key="index" >
         <div class="execution-item">
           

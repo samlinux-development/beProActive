@@ -22,10 +22,19 @@ interface Exercise {
 
   let executionListRef = ref<ExecutionList | null>(null);
 
+
+  let stopWatchRef = ref<StopWatch | null>(null);
+  interface StopWatch {
+    time: number;
+    stop: () => void;
+    start: () => void;
+  }
+
   const addExercise = async () => {
     try {
       isLoading.value = true;
       const executions = executionListRef.value?.executions || [];
+      const duration = stopWatchRef.value?.time || 0;
       const actor = await $getActor({}, true);
     
       // prepare an array with the count and repetition values
@@ -44,8 +53,9 @@ interface Exercise {
 
         return { set, repetition, typeOfExercise, kg, seconds };
       });
-      
-      await actor.addWorkout({duration:0, exercises:executionList});
+    
+      //console.log({ duration });
+      await actor.addWorkout({duration:duration, exercises:executionList});
       
       // reset the execution list
       executionListRef = ref(null);
@@ -71,11 +81,12 @@ interface Exercise {
   });
 
   const openModal = () => {
+    stopWatchRef.value?.stop();
     modalSideBarIsOpen.value = true;
   };
 
   const confirmAddExercise = () => {
-    closeModalSidebar();
+    modalSideBarIsOpen.value = false;
     addExercise();
   };
 
@@ -98,7 +109,12 @@ interface Exercise {
   const modalSideBarIsOpen = ref(false);
   const closeModalSidebar = () => {
     modalSideBarIsOpen.value = false;
+    startStopWatch();
   }
+
+  const startStopWatch = () => {
+    stopWatchRef.value?.start();
+  };
 
 </script>
 
@@ -115,6 +131,7 @@ interface Exercise {
     <div v-else-if="isAuth">
       <h1>{{ $translate ('workout.title') }}</h1>
       <form type="submit" v-if="!isLoading">
+        <Stopwatch ref="stopWatchRef"/>
         <ExecutionList ref="executionListRef"/>
 
         <UModal 

@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 let text0 = 'BeProActive - Stay active and healthy';
 let text1 = 'BeProActive is your go-to platform for staying active and healthy. Track your workouts and join a community of fitness enthusiasts.';
-let image = 'https://guxxd-cyaaa-aaaai-aq34a-cai.icp0.io/beActive.png';
+let image = 'https://beproactive.at/beProActive.png';
 let keywords = 'BeProActive, fitness, workout, push-ups, community, health, active, IcAcademy, Internet Computer';
 export default defineNuxtConfig({
   ssr: false,
@@ -26,7 +26,7 @@ export default defineNuxtConfig({
       network: process.env.NUXT_PUBLIC_DFX_NETWORK,
       matomo_host: "https://veriable.matomo.cloud/",
       matomo_site_id: 9,
-      frontendBuild: 'v0.1.4'
+      frontendBuild: 'v0.2.0'
     }
   },
   components: [

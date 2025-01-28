@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import { ref } from 'vue'
   import { useNuxtApp } from '#app'
-  import { formatDate } from '../utils/helper';
+  import { formatDate, formatDuration } from '../utils/helper';
 
   import { type LatestWorkouts } from '../declarations/backend/backend.did.js';
   const { $translate, $getActor } = useNuxtApp();
@@ -13,7 +13,7 @@
     try {
       const actor = await $getActor({},true);
       const result2 = await actor.getLatestWorkouts();
-      
+      //console.log(result2);
       // create a new latestWorkouts array
       latestWorkouts.value = result2.map((workout:any) => {
         return workout[1];

@@ -10,6 +10,15 @@ export default defineNuxtPlugin((nuxtApp) => {
       'index.hello': 'Check out the newest workout warriors crushing their fitness goals! 💪 Are you ready to join the leaderboard with your own epic sessions?',
       'index.hello2': 'Help to grow the community by sharing your workout achievements! Train with __totalUsers__ other fitness enthusiasts and inspire each other to reach new heights! 🏋️‍♂️',
       'pwa.refresh-button': 'New version available, click to update',
+      
+      'navigation.menu.about': 'About',
+      'navigation.menu.home': 'Home',
+      'navigation.menu.github': 'GitHub',
+      'navigation.menu.logout': 'Logout',
+      'navigation.menu.profile': 'Profile',
+      'navigation.menu.leaderboard': 'Ranking',
+      'navigation.menu.addWorkout': 'Add workout',
+
       'navigation.title': 'Be ProActive',
       'navigation.desc': 'Track your daily workouts and share them with the community and your friends. Stay motivated and inspire others to crush their goals!',
       'workout.title': 'Add new workout',
@@ -37,6 +46,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.confirm-yes':'Yes, submit',
       'workout.confirm-no':'No, cancel',
       'workout.typeOfExercise':'Exercise',
+      'workout.duration':'Duration',
       'about.title': 'About this dApp',
       'about.info': 'This dApp helps you to track your daily workouts and share them with the community and your friends. It is a decentralized application (dApp) built on the Internet Computer and it is completely anonymous. Your data is stored on the blockchain and can be changed only by your Internet Identity.',
       'about.info2': 'This dApp is powered by IcAcademy, a part of the samlinux development team. We are a group of developers who are passionate about building on the Internet Computer and sharing our knowledge with the community.',
@@ -77,7 +87,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
       'workout.typeOfExercise0':'Choose exercise',
       'workout.typeOfExercise1':'Push-ups',
-      'workout.typeOfExercise2':'Sqaut',
+      'workout.typeOfExercise2':'Squat',
       'workout.typeOfExercise3':'Bicep Curl (Dumbbell)',
       'workout.typeOfExercise4':'Hammer Curl (Dumbbell)',
       'workout.typeOfExercise5':'Plank',
@@ -117,6 +127,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.typeOfExercise39':'Back Mobility',
       'workout.typeOfExercise40':'Australian Pull-up',
       'workout.typeOfExercise41':'Single-leg Stance',
+      'workout.typeOfExercise42':'Knee Push-ups',
 
     };
     return translations[key] || key;
