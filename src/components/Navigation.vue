@@ -13,9 +13,10 @@ const modalSideBarIsOpen = ref(false);
 let { $authClient } = useNuxtApp() as any;
 
 let nav = ref([
-  { id:'home', label: $translate('navigation.menu.home'), to: '/', icon: 'mdi:book-open-blank-variant-outline' },
+  { id:'home', label: $translate('navigation.menu.home'), to: '/', icon: 'i-lucide-book-open' },
   { id:'leaderboard', label: $translate('navigation.menu.leaderboard'), to: '/?t=lb', icon: 'i-lucide-chart-no-axes-combined' },
-  { id:'about', label: $translate('navigation.menu.about'), to: '/about', icon: 'mdi:information-slab-circle-outline' },
+  { id: 'blog', label: $translate('navigation.menu.blog'), to: '/blog', icon: 'i-lucide-rss' },
+  { id:'about', label: $translate('navigation.menu.about'), to: '/about', icon: 'i-lucide-info' },
   {
     id:'github',
     label: $translate('navigation.menu.github'),

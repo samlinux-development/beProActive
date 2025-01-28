@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { ref } from 'vue'
-  import { isAuthenticated } from '../src/utils/helper';
+  import { isAuthenticated, formatDuration } from '../src/utils/helper';
 
 interface Exercise {
   'kg' : number,
@@ -8,13 +8,14 @@ interface Exercise {
   'seconds' : bigint,
   'typeOfExercise' : number,
   'repetition' : number,
-  'minutes'? : number
+  'minutes'? : bigint | number | undefined
 }
 
   const { $translate, $getActor } = useNuxtApp();
   const isLoading = ref<boolean>(false);
   const isAuth = ref(false);
   const isCheckingAuth = ref<boolean>(true);
+  const duration = ref(0);
 
   interface ExecutionList {
     executions: Exercise[];
@@ -34,7 +35,7 @@ interface Exercise {
     try {
       isLoading.value = true;
       const executions = executionListRef.value?.executions || [];
-      const duration = stopWatchRef.value?.time || 0;
+      duration.value = stopWatchRef.value?.time || 0;
       const actor = await $getActor({}, true);
     
       // prepare an array with the count and repetition values
@@ -47,7 +48,7 @@ interface Exercise {
         let seconds = parseInt(execution.seconds?.toString()) || 0;
         // if minutes available overwrite seconds
         if (execution.minutes && execution.minutes > 0) {
-          seconds = execution.minutes * 60;
+          seconds = Number(execution.minutes) * 60;
         }
         //console.log({ set, repetition, typeOfExercise, kg, seconds })
 
@@ -55,7 +56,7 @@ interface Exercise {
       });
     
       //console.log({ duration });
-      await actor.addWorkout({duration:duration, exercises:executionList});
+      await actor.addWorkout({duration:duration.value, exercises:executionList});
       
       // reset the execution list
       executionListRef = ref(null);
@@ -82,6 +83,8 @@ interface Exercise {
 
   const openModal = () => {
     stopWatchRef.value?.stop();
+    duration.value = stopWatchRef.value?.time || 0;
+
     modalSideBarIsOpen.value = true;
   };
 
@@ -109,7 +112,10 @@ interface Exercise {
   const modalSideBarIsOpen = ref(false);
   const closeModalSidebar = () => {
     modalSideBarIsOpen.value = false;
-    startStopWatch();
+    // only if timer is > 0
+    if ((stopWatchRef.value?.time ?? 0) > 0){
+      startStopWatch();
+    }
   }
 
   const startStopWatch = () => {
@@ -150,9 +156,20 @@ interface Exercise {
           </UButton>
 
           <template #body>
+            <div class="execution-details">
+              <h3>{{ $translate('workout.executionDetails2') }}</h3>
+              <div v-if="duration || 0 > 0" class="flex flex-row items-center">  
+                <div class="pr-0.5 flex flex-row items-center">
+                  <Icon name="i-lucide-timer" class="icon" /> </div>
+                <div>{{ formatDuration(BigInt(duration)) }} </div>
+              </div>
+              <ul>
+                <ExerciseConfirm v-for="(exercise, index) in executionListRef?.executions || []" :key="index" :exercise="exercise" />
+              </ul>
+            </div>
             <div class="modal-actions">
               <UButton @click="confirmAddExercise">{{ $translate('workout.confirm-yes') }}</UButton>  
-              <UButton color="neutral" @click="closeModalSidebar">
+              <UButton color="error" @click="closeModalSidebar">
                 {{ $translate('profile.friends-sidebar-remove-friend-modal-cancel-button') }}
               </UButton>
             </div>
@@ -185,5 +202,8 @@ interface Exercise {
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
+  }
+  .icon {
+    font-size: 1.2rem;
   }
 </style>

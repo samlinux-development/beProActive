@@ -24,7 +24,7 @@ onMounted(async () => {
 const itemTabs = ref([
   {
     label: 'Latest Workouts',
-    icon: 'i-lucide-rss',
+    icon: 'i-lucide-party-popper',
     slot: 'latestWorkouts'
   },
   {

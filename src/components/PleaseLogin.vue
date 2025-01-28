@@ -4,7 +4,7 @@ const { $translate } = useNuxtApp() as any;
 
 <template>
   <div class="please-login">
-    <Icon name="mdi:security-close" class="icon" />
+    <Icon name="i-lucide-shield-alert" class="icon" />
     <h2>{{ $translate('auth.pleaseLoginTitle') }}</h2>
     <p>{{ $translate('auth.pleaseLoginMessage') }}</p>
   </div>

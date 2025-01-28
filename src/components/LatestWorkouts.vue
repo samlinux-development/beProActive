@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import { ref } from 'vue'
   import { useNuxtApp } from '#app'
-  import { formatDate, formatDuration } from '../utils/helper';
+  import { formatDate } from '../utils/helper';
 
   import { type LatestWorkouts } from '../declarations/backend/backend.did.js';
   const { $translate, $getActor } = useNuxtApp();

@@ -18,6 +18,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       'navigation.menu.profile': 'Profile',
       'navigation.menu.leaderboard': 'Ranking',
       'navigation.menu.addWorkout': 'Add workout',
+      'navigation.menu.blog': 'Blog',
 
       'navigation.title': 'Be ProActive',
       'navigation.desc': 'Track your daily workouts and share them with the community and your friends. Stay motivated and inspire others to crush their goals!',
@@ -41,6 +42,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.minutes': 'min',
       'workout.repetition': 'Reps',
       'workout.executionDetails':'Exercises',
+      'workout.executionDetails2':'Great job! Go ahead and submit these exercises!',
       'workout.confirm-title':'Ready to submit workout?',
       'workout.confirm-text':'Please confirm that you have completed the workout, be honest 😉',
       'workout.confirm-yes':'Yes, submit',
@@ -84,7 +86,8 @@ export default defineNuxtPlugin((nuxtApp) => {
       'button-close': 'Close',
       'ranking.title': '🏆 Leaderboard',
       'ranking.desc': 'Check out the top fitness warriors crushing their workouts! 🚀 Are you ready to join the leaderboard with your own epic sessions?',
-
+      'blog.title': 'Blog about BeProActive',
+      'blog.description': 'Read all about the latest news and updates on our blog.',
       'workout.typeOfExercise0':'Choose exercise',
       'workout.typeOfExercise1':'Push-ups',
       'workout.typeOfExercise2':'Squat',
