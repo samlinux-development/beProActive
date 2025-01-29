@@ -28,6 +28,7 @@ function getPosts(){
    
     return {
       title: data.title,
+      id: data.id,
       date: formatDate(data.date),
       content: marked.parse(content),
       slug: filename.replace(/\.md$/, ''),

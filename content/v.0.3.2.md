@@ -1,6 +1,7 @@
 ---
 date: 2025-01-29
 title: Release v0.3.2
+id: 3
 ---
 
 ## Bug Fixes

@@ -3,14 +3,14 @@ import data from '~/src/data/content.json';
 const { $translate } = useNuxtApp();
 
 interface Post {
-  id: number;
+  id: string;
   title: string;
   date: string;
   content: string;
   slug: string;
 
 }
-const allPosts = ref<Post[]>(data.map((post, index) => ({ ...post, id: index })));
+const allPosts = ref<Post[]>(data.map(post => ({ ...post, id: String(post.id) })));
 
 useSeoMeta({
   title: $translate('blog.title'),
@@ -38,7 +38,7 @@ useSeoMeta({
 
     </UCard>
   </div>
-  
+  <Footer/>
 </template>
 
 <style>
