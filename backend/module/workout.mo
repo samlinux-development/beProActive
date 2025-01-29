@@ -27,7 +27,8 @@ module {
     map: Map.Map<Principal, StateTypes.WorkoutToStore>,
     latestWorkout: Map.Map<Nat, StateTypes.LatestWorkouts>,
     users: Map.Map<Principal, StateTypes.User>,
-    maxPublicWorkouts:Nat) : async Bool {
+    maxPublicWorkouts:Nat,
+    currentPublicWorkoutId:Nat) : async Bool {
 
     if (Map.contains(map, phash, caller) == ?true){
       let wOpt = Map.get(map, phash, caller);
@@ -46,7 +47,7 @@ module {
           Map.set(w.workouts, nhash, newWorkoutCount, newWorkout);
 
           // add latest workout
-          let _r = await addLatestWorkout(caller, newWorkout, latestWorkout, users, newWorkoutCount, maxPublicWorkouts);
+          let _r = addLatestWorkout(caller, newWorkout, latestWorkout, users, currentPublicWorkoutId, maxPublicWorkouts);
 
           // add the points to the user
           let _r2 = addPoints(caller, newWorkout, users);
@@ -80,7 +81,7 @@ module {
       Map.set(map, phash, caller, workoutToStore);
 
       // add latest workout
-      let _r = await addLatestWorkout(caller, newWorkout, latestWorkout, users, 1, maxPublicWorkouts);
+      let _r = addLatestWorkout(caller, newWorkout, latestWorkout, users, currentPublicWorkoutId, maxPublicWorkouts);
 
       // add the points to the user
       let _r2 = addPoints(caller, newWorkout, users);
@@ -130,8 +131,8 @@ module {
     workout: StateTypes.Workout, 
     latestWorkout: Map.Map<Nat, StateTypes.LatestWorkouts>,
     users: Map.Map<Principal, StateTypes.User>,
-    newWorkoutCount:Nat,
-    maxPublicWorkouts:Nat) : async Bool{
+    currentPublicWorkoutId:Nat,
+    maxPublicWorkouts:Nat) : Bool{
     
     let alias = getAlias(caller, users);
     let newWorkout:StateTypes.LatestWorkouts = {
@@ -140,14 +141,16 @@ module {
       exercises = workout.exercises;
     };
 
-    Map.set(latestWorkout, nhash, newWorkoutCount, newWorkout);
+    Map.set(latestWorkout, nhash, currentPublicWorkoutId, newWorkout);
+  
     //Debug.print("workout added to latestWorkouts "#debug_show(newWorkout));
-    //Debug.print("new workout count "#debug_show(newWorkoutCount));
+    //Debug.print("new workout count "#debug_show(currentPublicWorkoutId));
     let sizeOfLatestWorkouts = Map.size(latestWorkout);
 
     // Remove the oldest workouts if the max size is reached
     if (sizeOfLatestWorkouts > maxPublicWorkouts) {
       let keys = Iter.toArray(Map.keys(latestWorkout));
+      //Debug.print("Keys "#debug_show(keys));
       let sortedKeys = Array.sort<Nat>(keys, func (a, b) {
         if (a < b) {
           #less
@@ -157,10 +160,14 @@ module {
           #equal
         }
       });
-      let oldest = sortedKeys[0];
-      //Debug.print("Removing oldest workout "#debug_show(oldest));
-      ignore Map.remove(latestWorkout, nhash, oldest);
 
+      let excessCount:Nat = sizeOfLatestWorkouts - maxPublicWorkouts - 1 ;
+      //Debug.print("excessCount "#debug_show(excessCount));
+      for (i in Iter.range(0, excessCount)) {
+        let oldest = sortedKeys[i];
+        //Debug.print("Removing oldest workout "#debug_show(oldest));
+        ignore Map.remove(latestWorkout, nhash, oldest);
+      };
     };
     return true;
   };

@@ -22,10 +22,10 @@ shared ({ caller = creator }) actor class Main () {
 
   // do not forget to change #v0_1_0 when you are adding a new migration
   // if you use one of previus states in place of #v0_1_0 it will run downgrade methods instead
-  migrationState := Migrations.migrate(migrationState, #v0_1_0(#id), { creator });
+  migrationState := Migrations.migrate(migrationState, #v0_1_1(#id), { creator });
 
   // do not forget to change #v0_1_0 when you are adding a new migration
-  let state = switch (migrationState) { case (#v0_1_0(#data(state))) state; case (_) Debug.trap("Unexpected migration state") };
+  let state = switch (migrationState) { case (#v0_1_1(#data(state))) state; case (_) Debug.trap("Unexpected migration state") };
 
   //----------------------------------
   // public methods
@@ -63,6 +63,24 @@ shared ({ caller = creator }) actor class Main () {
     return true;
   };
 
+  // get maxPublicWorkouts limit for latest workouts
+  public shared query ({caller}) func getMaxPublicWorkouts() : async Nat {
+    // Only the creator can get the limit
+    if (caller != creator) {
+        return 0;
+    };
+    state.maxPublicWorkouts;
+  };
+
+  // get currentÜublicWorkoutId 
+  public shared query ({caller}) func getCurrentPublicWorkoutId() : async Nat {
+    // Only the creator can get the limit
+    if (caller != creator) {
+        return 0;
+    };
+    state.currentPublicWorkoutId;
+  };
+  
   // get all workouts
   public shared query ({caller}) func getAllWorkouts(): async [(Principal, {workouts: [(Nat, StateTypes.Workout)]})]{
     if (caller != creator) {return [];};
@@ -87,7 +105,16 @@ shared ({ caller = creator }) actor class Main () {
   // add a new workout to the user's workout map
   public shared ({caller}) func addWorkout(workout: StateTypes.WorkoutPayload) : async Bool{
     if(Principal.isAnonymous(caller)) {return false;};
-    await Workout.addWorkout(caller, workout, state.map, state.latestWorkouts, state.users, state.maxPublicWorkouts);
+    state.currentPublicWorkoutId := state.currentPublicWorkoutId + 1;
+    await Workout.addWorkout(
+      caller, 
+      workout, 
+      state.map, 
+      state.latestWorkouts, 
+      state.users, 
+      state.maxPublicWorkouts,
+      state.currentPublicWorkoutId
+      );
   };
 
   // get all workouts per principal

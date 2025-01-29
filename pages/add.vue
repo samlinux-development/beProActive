@@ -202,6 +202,7 @@ interface Exercise {
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
+    margin-top: 1rem;
   }
   .icon {
     font-size: 1.2rem;
