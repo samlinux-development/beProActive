@@ -131,6 +131,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.typeOfExercise40':'Australian Pull-up',
       'workout.typeOfExercise41':'Single-leg Stance',
       'workout.typeOfExercise42':'Knee Push-ups',
+      'workout.typeOfExercise43':'Daily Morning Routine',
 
     };
     return translations[key] || key;

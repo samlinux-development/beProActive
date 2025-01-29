@@ -26,13 +26,13 @@ export default defineNuxtConfig({
       network: process.env.NUXT_PUBLIC_DFX_NETWORK,
       matomo_host: "https://veriable.matomo.cloud/",
       matomo_site_id: 9,
-      frontendBuild: 'v0.3.0'
+      frontendBuild: 'v0.3.1'
     }
   },
   components: [
     { path: '~/src/components' },
   ],
-  modules: ['@nuxt/icon', '@nuxt/image', '@nuxt/ui', '@vite-pwa/nuxt', '@nuxt/content', 'nuxt-security'],
+  modules: ['@nuxt/icon', '@nuxt/image', '@nuxt/ui', '@vite-pwa/nuxt'],
   css: ['~/assets/css/main.css'],
   colorMode: {
     preference: 'light'
@@ -104,18 +104,6 @@ export default defineNuxtConfig({
     build: {
       chunkSizeWarningLimit: 1000
     }
-  },
-  content: {
-    
-  },
-  security: {
-    removeLoggers: false,
-    headers: {
-      crossOriginEmbedderPolicy: 'require-corp',
-      crossOriginOpenerPolicy: 'same-origin',
-      contentSecurityPolicy: {
-        'script-src': ['\'self\'', 'https:', '\'strict-dynamic\'', '\'nonce-{{nonce}}\'', '\'wasm-unsafe-eval\''],
-      },
-    },
-  },
+  }
+  
 })

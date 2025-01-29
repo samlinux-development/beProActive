@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row items-center ">
-    <div class="text-xl font-semibold mr-2"> {{ formattedTime }} </div>
+    <div class=" font-semibold mr-2 text-[40px]"> {{ formattedTime }} </div>
     <div class="flex space-x-2">
       <!-- Start Button -->
       <UButton

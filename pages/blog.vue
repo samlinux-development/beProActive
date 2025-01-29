@@ -1,7 +1,16 @@
 <script setup lang="ts">
-const allPosts = await queryCollection('blog').order('date', 'DESC').all();
-//console.log(allPosts);
+import data from '~/src/data/content.json';
 const { $translate } = useNuxtApp();
+
+interface Post {
+  id: number;
+  title: string;
+  date: string;
+  content: string;
+  slug: string;
+
+}
+const allPosts = ref<Post[]>(data.map((post, index) => ({ ...post, id: index })));
 
 useSeoMeta({
   title: $translate('blog.title'),
@@ -18,12 +27,15 @@ useSeoMeta({
     <UCard class="bg-gray-100">
       <template #header>
         <div class="flex flex-col">
-          <h2 class="color" style="margin:0">{{ post.title }}</h2>
+          <h2 class="color" style="margin:0"><a class="blogTitle" :id="String(post.id)"> {{ post.title }} </a></h2>
           <div class="italic desc">{{ post.date }}</div>
         </div>
       </template>
-    
-      <ContentRenderer :value="post" :prose="false" class="content"/>
+     
+      <div class="content">
+          <div v-html="post.content"></div>
+      </div>
+
     </UCard>
   </div>
   
@@ -37,6 +49,10 @@ useSeoMeta({
   margin-bottom: 1rem;
 }
 
+.blogTitle {
+  color: rgb(83, 190, 85, 1);
+  text-decoration: none;
+}
 .color {
   color: rgb(52, 139, 54, 1);
 }

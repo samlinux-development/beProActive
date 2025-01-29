@@ -45,6 +45,7 @@ onMounted(async () => {
  * Initializes the authClient to enable authenticated calls and handles the user login process.
  */
 const login = async () => {
+  //console.log('C',iicanisterId,'network:',config.public.network);
   try {
     isLoading.value = true;
     await $authClient.login({

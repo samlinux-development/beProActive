@@ -4,35 +4,34 @@
   "type": "module",
   "scripts": {
     "deploy-ic": "DFX_NETWORK=ic npm run extract-id  && nuxt generate && dfx deploy --ic",
-    "deploy-ic-frontend": "DFX_NETWORK=ic npm run extract-id  && nuxt generate && dfx deploy frontend --ic",
+    "deploy-ic-frontend": "DFX_NETWORK=ic npm run convertMarkdown && npm run extract-id  && nuxt generate && dfx deploy frontend --ic",
     "deploy-playground": "DFX_NETWORK=playground npm run extract-id && nuxt generate && dfx deploy --playground",
     "deploy-local": "DFX_NETWORK=local npm run extract-id && nuxt generate && dfx deploy",
     "build": "npm run extract-id && nuxt generate",
-    "dev": "DFX_NETWORK=local npm run extract-id && nuxt cleanup && nuxt dev ",
+    "dev": "DFX_NETWORK=local npm run convertMarkdown && npm run extract-id && nuxt cleanup && nuxt dev ",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "extract-id": "node scripts/extract-canister-id.js"
+    "extract-id": "node scripts/extract-canister-id.js",
+    "clean": "nuxt cleanup",
+    "convertMarkdown": "node scripts/convertMarkdown.js"
   },
   "dependencies": {
     "@dfinity/agent": "^2.2.0",
     "@dfinity/auth-client": "^2.2.0",
-    "@libsql/client": "^0.14.0",
-    "@nuxt/content": "^3.0.1",
     "@nuxt/icon": "^1.10.3",
     "@nuxt/image": "^1.8.1",
     "@nuxt/types": "^2.18.1",
     "@nuxt/ui": "^3.0.0-alpha.10",
-    "@nuxtjs/mdc": "^0.13.2",
     "@vite-pwa/nuxt": "^0.10.6",
     "nuxt": "^3.15.1",
-    "nuxt-security": "^2.1.5",
     "pg": "^8.13.1",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
-    "@iconify-json/mdi": "^1.2.2",
+    "gray-matter": "^4.0.3",
+    "marked": "^15.0.6",
     "nuxi": "^3.19.1"
   }
 }
