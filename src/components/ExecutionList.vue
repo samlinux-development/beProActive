@@ -174,6 +174,7 @@ defineExpose({ executions });
   .icon {
     color: white;
     margin-top: 2px;
+    font-size: 1.3rem;
   }
 
   .execution-form {

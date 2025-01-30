@@ -16,6 +16,7 @@ interface Exercise {
   const isAuth = ref(false);
   const isCheckingAuth = ref<boolean>(true);
   const duration = ref(0);
+  const manualDuration = ref(0);
 
   interface ExecutionList {
     executions: Exercise[];
@@ -35,7 +36,13 @@ interface Exercise {
     try {
       isLoading.value = true;
       const executions = executionListRef.value?.executions || [];
-      duration.value = stopWatchRef.value?.time || 0;
+
+      if(manualDuration.value > 0){
+        duration.value = manualDuration.value;
+      } else {
+        duration.value = stopWatchRef.value?.time || 0;
+      }
+      
       const actor = await $getActor({}, true);
     
       // prepare an array with the count and repetition values
@@ -55,7 +62,7 @@ interface Exercise {
         return { set, repetition, typeOfExercise, kg, seconds };
       });
     
-      //console.log({ duration });
+      //console.log('duration for store',duration.value);
       await actor.addWorkout({duration:duration.value, exercises:executionList});
       
       // reset the execution list
@@ -84,7 +91,6 @@ interface Exercise {
   const openModal = () => {
     stopWatchRef.value?.stop();
     duration.value = stopWatchRef.value?.time || 0;
-
     modalSideBarIsOpen.value = true;
   };
 
@@ -116,11 +122,53 @@ interface Exercise {
     if ((stopWatchRef.value?.time ?? 0) > 0){
       startStopWatch();
     }
+    ctrlManualDuration.value = false;
+    duration.value = stopWatchRef.value?.time ?? 0;
+    manualDuration.value = 0;
   }
 
   const startStopWatch = () => {
     stopWatchRef.value?.start();
   };
+
+  // section manual duration
+  const hours = ref<number | undefined>();
+  const minutes = ref<number | undefined>();
+  const seconds = ref<number | undefined>();
+
+  const generateOptions = (limit: number) => {
+    return Array.from({ length: limit + 1 }, (_, i) => {
+      const value = i;
+      //const label = String(i).padStart(2, '0');
+      const label = i;
+      return { value, label: label };
+    });
+  }
+  const minuteOptions = generateOptions(59);
+  const secondOptions = generateOptions(59);
+  const hourOptions = generateOptions(23);
+  const ctrlManualDuration = ref(false);
+
+  // watch for changes in the manual duration and update the total duration
+  watch([hours, minutes, seconds], ([newHours, newMinutes, newSeconds]) => {
+    const newHoursInt = Number(newHours) || 0;
+    const newMinutesInt = Number(newMinutes) || 0;
+    const newSecondsInt = Number(newSeconds) || 0;
+
+    const totalMilliseconds = ((newHoursInt * 3600) + (newMinutesInt * 60) + newSecondsInt) * 1000;
+
+    if (duration.value !== totalMilliseconds && ctrlManualDuration.value) {
+      duration.value = totalMilliseconds;
+      manualDuration.value = totalMilliseconds;
+    }
+  });
+  
+  // clear the manual duration when the modal is opened
+  watch(modalSideBarIsOpen, (newValue) => {
+    if (newValue) {
+      hours.value = undefined; minutes.value = undefined; seconds.value = undefined;
+    }
+  });
 
 </script>
 
@@ -139,7 +187,6 @@ interface Exercise {
       <form type="submit" v-if="!isLoading">
         <Stopwatch ref="stopWatchRef"/>
         <ExecutionList ref="executionListRef"/>
-
         <UModal 
           v-model:open="modalSideBarIsOpen"
           :title="$translate('workout.confirm-title')"
@@ -151,25 +198,36 @@ interface Exercise {
             @click="openModal" 
             size="md" 
             color="primary" 
-            variant="solid">
+            variant="solid" class="text-lg">
             {{$translate ('workout.addBtn')}}
           </UButton>
 
           <template #body>
             <div class="execution-details">
-              <h3>{{ $translate('workout.executionDetails2') }}</h3>
-              <div v-if="duration || 0 > 0" class="flex flex-row items-center">  
+              <h2>{{ $translate('workout.executionDetails2') }}</h2>
+              <div v-if="duration || 0 > 0" class="flex flex-row items-center">
+              
                 <div class="pr-0.5 flex flex-row items-center">
-                  <Icon name="i-lucide-timer" class="icon" /> </div>
-                <div>{{ formatDuration(BigInt(duration)) }} </div>
+                  {{ $translate('workout.workoutDuration') }}:
+                </div>
+                  <div>{{ formatDuration(BigInt(duration)) }} </div>
               </div>
+              <div class="flex flex-col">
+                <div>{{ $translate('workout.manualDuration') }}</div>
+                <div class="flex flex-row items-center gap-x-2 mb-1 mt-1">
+                  <USelect id="hours" v-model="hours" :items="hourOptions" placeholder="h" class="w-[80px]" @change="  ctrlManualDuration = true"/>  
+                  <USelect id="minutes" v-model="minutes" :items="minuteOptions" placeholder="m" class="w-[80px]" @change="  ctrlManualDuration = true"/>
+                  <USelect id="seconds" v-model="seconds" :items="secondOptions" placeholder="s" class="w-[80px]" @change="  ctrlManualDuration = true"/>
+                </div>
+              </div>
+
               <ul>
                 <ExerciseConfirm v-for="(exercise, index) in executionListRef?.executions || []" :key="index" :exercise="exercise" />
               </ul>
             </div>
             <div class="modal-actions">
-              <UButton @click="confirmAddExercise">{{ $translate('workout.confirm-yes') }}</UButton>  
-              <UButton color="error" @click="closeModalSidebar">
+              <UButton @click="confirmAddExercise" class="text-lg">{{ $translate('workout.confirm-yes') }}</UButton>  
+              <UButton color="error" @click="closeModalSidebar"  class="text-lg">
                 {{ $translate('profile.friends-sidebar-remove-friend-modal-cancel-button') }}
               </UButton>
             </div>
@@ -194,7 +252,9 @@ interface Exercise {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-
+  .select {
+    width: 40px;
+  }
   label {
     font-weight: bold;
   }
@@ -207,4 +267,5 @@ interface Exercise {
   .icon {
     font-size: 1.2rem;
   }
+  
 </style>

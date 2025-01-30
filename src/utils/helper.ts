@@ -45,14 +45,21 @@ export const formatDuration = (milliseconds: bigint) => {
   const minutes = Math.floor((seconds % 3600) / 60);
   const remainingSeconds = seconds % 60;
   // output format is hh:mm:ss print only values are available
-  if(hours === 0 && minutes === 0) {
-    return `${remainingSeconds}s`;
+  //console.log(hours, minutes, remainingSeconds);
+  
+  let formatTime = '';
+  if (hours > 0) {
+    formatTime += `${hours}h `;
   }
-  else if (hours === 0) {
-    return `${minutes}m ${remainingSeconds}s`;
+
+  if (minutes > 0) {
+    formatTime += `${minutes}m `;
   }
-  else {
-    return `${hours}h ${minutes}m ${remainingSeconds}s`;
+
+  if (remainingSeconds > 0) {
+    formatTime += `${remainingSeconds}s`;
   }
+
+  return formatTime.trim();
 };
 

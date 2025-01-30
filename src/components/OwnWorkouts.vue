@@ -36,8 +36,8 @@
 
             <div class="workout-date flex flex-row items-center">
               <div>{{ $translate ('workout.at') }} {{ formatDate(workout.date) }}</div>
-              <div v-if="workout.duration > 0" class="flex flex-row items-center">  
-                <div class="pl-1 pr-0.5"><Icon name="i-lucide-timer" class="icon" /> </div>
+              <div v-if="workout.duration > 0" class="flex flex-row items-center ">  
+                <Icon name="i-lucide-timer" class="icon ml-1 mr-1" />
                 <div>{{ formatDuration(workout.duration) }}</div>
               </div>
             </div>

@@ -49,6 +49,8 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.confirm-no':'No, cancel',
       'workout.typeOfExercise':'Exercise',
       'workout.duration':'Duration',
+      'workout.workoutDuration':'Your workout duration',
+      'workout.manualDuration':'Set manual workout duration?',
       'about.title': 'About this dApp',
       'about.info': 'This dApp helps you to track your daily workouts and share them with the community and your friends. It is a decentralized application (dApp) built on the Internet Computer and it is completely anonymous. Your data is stored on the blockchain and can be changed only by your Internet Identity.',
       'about.info2': 'This dApp is powered by IcAcademy, a part of the samlinux development team. We are a group of developers who are passionate about building on the Internet Computer and sharing our knowledge with the community.',
