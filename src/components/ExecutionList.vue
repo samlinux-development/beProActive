@@ -105,7 +105,7 @@ defineExpose({ executions });
             placeholder="Select exercise"  
             v-model="execution.typeOfExercise" 
             :items="translatedExerciseOptions" 
-            class="w-[300px]"/>
+            class="w-[300px] font-semibold"/>
 
           <UButton v-if="index > 0" @click="removeExecution(index)" color="error">
             <Icon name="i-lucide-trash" class="icon" />
@@ -119,7 +119,7 @@ defineExpose({ executions });
             placeholder="set" 
             :min="1"
             :default-value="1"
-            class="w-[100px]"/>
+            class="w-[100px] font-semibold"/>
 
           <UInput  
             v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'kg'"
@@ -127,7 +127,7 @@ defineExpose({ executions });
             v-model="execution.repetition"
             inputmode="numeric" pattern="[0-9]*"
             placeholder="reps" 
-            class="w-[60px] sm:w-[80px]"/>
+            class="w-[60px] font-semibold sm:w-[80px]"/>
 
           <UInput 
             v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'kg'"
@@ -136,7 +136,7 @@ defineExpose({ executions });
             v-model="execution.kg" 
             @keyup.enter="addExecution"
             placeholder="kg"
-            class="w-[60px] sm:w-[80px]"
+            class="w-[60px] font-semibold sm:w-[80px]"
           />
 
           <UInput 
@@ -146,7 +146,7 @@ defineExpose({ executions });
             v-model="execution.seconds" 
             @keyup.enter="addExecution"
             placeholder="sec"
-            class="w-[60px] sm:w-[80px]"
+            class="w-[60px] font-semibold sm:w-[80px]"
           />
 
           <UInput 
@@ -156,7 +156,7 @@ defineExpose({ executions });
             v-model="execution.minutes" 
             @keyup.enter="addExecution"
             placeholder="min"
-            class="w-[60px] sm:w-[80px]"
+            class="w-[60px] font-semibold sm:w-[80px]"
           />
             
           <UButton v-if="index === executions.length - 1 && (execution.set !== null && (execution.repetition !== null || execution.seconds !== null || execution.minutes !== null))" @click="addExecution">

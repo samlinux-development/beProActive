@@ -152,6 +152,17 @@
     userFriendsTableData.value = userFriends;
   }
 
+  // refresh the user profile
+  async function refreshUserProfile() {
+    const actor = await $getActor({}, true);
+    const userProfile = await actor.getUserProfile();
+    if(userProfile) {
+      user.value = userProfile.alias;
+      totalWorkouts.value = userProfile.totalWorkouts;
+      points.value = userProfile.points;
+    }
+  };
+
   /**
    * adds a friend
    */
@@ -166,6 +177,7 @@
 
       loadUserFriendsSidebar();
       getUserFriends();
+      refreshUserProfile();
 
       isFriendsSidebarLoading.value = false;
     }
@@ -182,6 +194,7 @@
     
     loadUserFriendsSidebar();
     getUserFriends();
+    refreshUserProfile();
     isFriendsSidebarLoading.value = false;
   }
 

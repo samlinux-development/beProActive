@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-row items-center ">
     <div class=" font-semibold mr-2"><span class="text-[43px]"> {{ formattedTime }} </span></div>
-    <div class="flex space-x-2">
+    <div class="flex space-x-3">
       <!-- Start Button -->
       <UButton
         size="sm"
@@ -88,7 +88,7 @@
 
 <style scoped>
  .icon {
-    font-size: 1rem;
+    font-size: 1.3rem;
     color: white;
   }
 </style>

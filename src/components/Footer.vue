@@ -36,6 +36,7 @@ const frontendBuild = config.public.frontendBuild;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-style: italic;
 }
 
 @media (max-width: 600px) {

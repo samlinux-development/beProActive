@@ -54,7 +54,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       'about.info2': 'This dApp is powered by IcAcademy, a part of the samlinux development team. We are a group of developers who are passionate about building on the Internet Computer and sharing our knowledge with the community.',
       'about.stayTuned': 'Stay in the loop with the latest development updates! 🚀 Follow me on <a target="_blank" href="https://x.com/samlinux/status/1874778087377994099">X</a> for real-time progress, or subscribe to our <a target="_blank" href="https://oc.app/community/gmf6e-caaaa-aaaar-beepq-cai/channel/230301923274756934814897448075398376070">OpenChat channel</a> to stay connected. 💬✨',
       'about.frontendBuild': 'Build',
-      'about.copyright': 'by IcAcademy / SDG - samlinux development group',
+      'about.copyright': 'by IcAcademy',
       'auth.pleaseLoginTitle': 'Please log in',
       'auth.pleaseLoginMessage': 'Access to this page requires to log in with your Internet Identity. Let’s get you started! 🚀',
       'profile.your-friends': 'Your friends:',

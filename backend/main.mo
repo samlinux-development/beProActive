@@ -99,6 +99,12 @@ shared ({ caller = creator }) actor class Main () {
     User.removeUser(user, state.users, state.map);
   };
 
+  // update users points (in case of emergency)
+  public shared ({caller}) func updatePoints(user: Principal, points: Nat): async Nat{
+    if (caller != creator) {return 0;};
+    User.updatePoints(user, points, state.users);
+  };
+
   //----------------------------------
   // only for authenticate users
   //----------------------------------

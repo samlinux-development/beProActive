@@ -11,6 +11,7 @@ import Iter "mo:base/Iter";
 import Text "mo:base/Text";
 import Array "mo:base/Array";
 import Buffer "mo:base/Buffer";
+import Nat16 "mo:base/Nat16";
 
 import Helper "helper";
 
@@ -20,7 +21,11 @@ module {
   // add a new workout to the user's workout map
   // ranking rules:
   // 10 points per Workout
+  // 10 points per adding a friend
+  // -10 points per removing a friend
   // 1 point per exercise
+  // 1 point per each repetition
+
   public func addWorkout(
     caller:Principal, 
     workout: StateTypes.WorkoutPayload, 
@@ -121,6 +126,14 @@ module {
 
     // Add 1 point per exercise
     totalPoints += Array.size(workout.exercises);
+
+    // Add 1 point per repetition
+    for (exercise in Iter.fromArray(workout.exercises)) {
+      totalPoints += Nat16.toNat(exercise.set);
+    };
+
+    //Debug.print("workout "#debug_show(workout));
+    //Debug.print("totalPoints "#debug_show(totalPoints));
     totalPoints;
   };
 

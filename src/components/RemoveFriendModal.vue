@@ -21,11 +21,11 @@
     :close="false"
     :description="$translate('profile.friends-sidebar-remove-friend-modal-description').replace('<FRIEND_ALIAS>', friendAlias)"
     >
-    <UButton class="remove-friend-button" icon="i-lucide:user-x" />
+    <UButton color="error" class="remove-friend-button" icon="i-lucide:user-x" />
 
     <template #body>
       <div class="flex gap-2">
-        <UButton @click="() => {removeFriend(friendPrincipal)}">
+        <UButton color="error" @click="() => {removeFriend(friendPrincipal)}">
           {{ $translate('profile.friends-sidebar-remove-friend-modal-confirm-button') }}
         </UButton>
 

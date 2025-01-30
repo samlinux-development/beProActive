@@ -8,7 +8,6 @@ import { nhash } "mo:map/Map";
 import Buffer "mo:base/Buffer";
 import Iter "mo:base/Iter";
 import Principal "mo:base/Principal";
-import Debug "mo:base/Debug";
 
 import Helper "helper";
 import Workout "workout";
@@ -52,6 +51,23 @@ module {
       case (?f) {
         if (Map.has(f.friends, phash, _friend)) {
           ignore Map.remove(f.friends, phash, _friend);
+          // remove 10 points for removing a friend
+          let user = Map.get(users, phash, caller);
+          switch (user) {
+            case (?u) {
+              let updatedUser:StateTypes.User = {
+                alias = u.alias;
+                size =  u.size;
+                friends = u.friends;
+                points = u.points - 10;
+              };
+              Map.set(users, phash, caller, updatedUser);
+            };
+            case (null) {
+              //Debug.print("No userprofile found");
+              return false;
+            };
+          };
           return true;
         } else {
           return false;
@@ -71,14 +87,32 @@ module {
       case (?f) {
         if (Map.has(f.friends, phash, _friend) == false) {
             Map.set(f.friends, phash, _friend, "");
+
+            // add 10 points for a new friend
+            let user = Map.get(users, phash, caller);
+            switch (user) {
+              case (?u) {
+                let updatedUser:StateTypes.User = {
+                  alias = u.alias;
+                  size =  u.size;
+                  friends = u.friends;
+                  points = u.points + 10;
+                };
+                Map.set(users, phash, caller, updatedUser);
+              };
+              case (null) {
+                //Debug.print("No userprofile found");
+                return false;
+              };
+            };
             return true;
         } else {
-            Debug.print("Friend already added");
-            return false;
+          //Debug.print("Friend already added");
+          return false;
         }
       };
       case (null) {
-        Debug.print("No userprofile found");
+        //Debug.print("No userprofile found");
         return false;
       };
     }
@@ -144,7 +178,9 @@ module {
         totalWorkouts = totalWorkouts;
         points = value.points;
       };
-      buffer.add(_r);
+      if( totalWorkouts > 0) {
+        buffer.add(_r);
+      } 
     };
     Buffer.toArray(buffer);
   };
@@ -291,6 +327,26 @@ module {
       principal=user;
       userProfile=userProfile;
       workouts=workouts;
+    };
+  };
+
+  // update users points with new value only for mantaining the leaderboard (only for emergency)
+  public func updatePoints(user: Principal, points: Nat, users: Map.Map<Principal, StateTypes.User>): Nat {
+    let foundUser = Map.get(users, phash, user);
+    switch (foundUser) {
+      case (?u) {
+        let updatedUser:StateTypes.User = {
+          alias = u.alias;
+          size =  u.size;
+          friends = u.friends;
+          points = points;
+        };
+        Map.set(users, phash, user, updatedUser);
+        points;
+      };
+      case (null) {
+        0;
+      };
     };
   };
 };
