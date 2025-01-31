@@ -2,35 +2,34 @@
   import { ref } from 'vue'
   import { isAuthenticated, formatDuration } from '../src/utils/helper';
 
-interface Exercise {
-  'kg' : number,
-  'set' : number,
-  'seconds' : bigint,
-  'typeOfExercise' : number,
-  'repetition' : number,
-  'minutes'? : bigint | number | undefined
-}
-
-  const { $translate, $getActor } = useNuxtApp();
-  const isLoading = ref<boolean>(false);
-  const isAuth = ref(false);
-  const isCheckingAuth = ref<boolean>(true);
-  const duration = ref(0);
-  const manualDuration = ref(0);
-
-  interface ExecutionList {
+  interface Exercise {
+    'kg' : number,
+    'set' : number,
+    'seconds' : bigint,
+    'typeOfExercise' : number,
+    'repetition' : number,
+    'minutes'? : bigint | number | undefined
+  }
+  interface ExecutionList { 
     executions: Exercise[];
   }
-
-  let executionListRef = ref<ExecutionList | null>(null);
-
-
-  let stopWatchRef = ref<StopWatch | null>(null);
   interface StopWatch {
     time: number;
     stop: () => void;
     start: () => void;
   }
+
+  const { $translate, $getActor } = useNuxtApp();
+  const isLoading = ref<boolean>(false);
+  const isAuth = ref(false);
+  const isCheckingAuth = ref<boolean>(true);
+  const modalSideBarIsOpen = ref(false);
+  const duration = ref(0);
+  const manualDuration = ref(0);
+  const exerciseDuration = ref(0);
+  
+  let executionListRef = ref<ExecutionList | null>(null);
+  let stopWatchRef = ref<StopWatch | null>(null);
 
   const addExercise = async () => {
     try {
@@ -39,7 +38,11 @@ interface Exercise {
 
       if(manualDuration.value > 0){
         duration.value = manualDuration.value;
-      } else {
+      } 
+      else if(exerciseDuration.value > 0){
+        duration.value = exerciseDuration.value;
+      }
+      else {
         duration.value = stopWatchRef.value?.time || 0;
       }
       
@@ -79,12 +82,7 @@ interface Exercise {
   const isFormValid = computed(() => {
     return executionListRef.value?.executions.every(execution => 
       execution.typeOfExercise !== null && execution.typeOfExercise > 0 &&
-      execution.set !== null && execution.set > 0 &&
-      execution.repetition !== null && execution.repetition > 0 || 
-      (
-        (execution.seconds !== null && execution.seconds > 0) ||
-        (execution.minutes !== undefined && execution.minutes > 0)
-      )
+      execution.set !== null && execution.set > 0 
     );
   });
 
@@ -92,6 +90,19 @@ interface Exercise {
     stopWatchRef.value?.stop();
     duration.value = stopWatchRef.value?.time || 0;
     modalSideBarIsOpen.value = true;
+
+    // fetch exercise duration
+    let exDuration = 0;
+    exDuration = (executionListRef.value?.executions ?? []).reduce((acc, curr) => {
+      return acc + Number(curr.seconds || 0) + Number(curr.minutes || 0) * 60;
+    }, 0);
+
+    if(exDuration > 0){
+      // convert to milliseconds
+      exDuration = exDuration * 1000;
+      exerciseDuration.value = exDuration;
+      duration.value = exDuration;
+    }
   };
 
   const confirmAddExercise = () => {
@@ -115,7 +126,6 @@ interface Exercise {
     }
   });
 
-  const modalSideBarIsOpen = ref(false);
   const closeModalSidebar = () => {
     modalSideBarIsOpen.value = false;
     // only if timer is > 0
@@ -131,7 +141,7 @@ interface Exercise {
     stopWatchRef.value?.start();
   };
 
-  // section manual duration
+  // --- manual duration
   const hours = ref<number | undefined>();
   const minutes = ref<number | undefined>();
   const seconds = ref<number | undefined>();
@@ -147,6 +157,7 @@ interface Exercise {
   const minuteOptions = generateOptions(59);
   const secondOptions = generateOptions(59);
   const hourOptions = generateOptions(23);
+  // this is a helper variable to control the manual duration
   const ctrlManualDuration = ref(false);
 
   // watch for changes in the manual duration and update the total duration
@@ -205,6 +216,7 @@ interface Exercise {
           <template #body>
             <div class="execution-details">
               <h2>{{ $translate('workout.executionDetails2') }}</h2>
+              
               <div v-if="duration || 0 > 0" class="flex flex-row items-center">
               
                 <div class="pr-0.5 flex flex-row items-center">
