@@ -35,17 +35,6 @@
     try {
       isLoading.value = true;
       const executions = executionListRef.value?.executions || [];
-
-      if(manualDuration.value > 0){
-        duration.value = manualDuration.value;
-      } 
-      else if(exerciseDuration.value > 0){
-        duration.value = exerciseDuration.value;
-      }
-      else {
-        duration.value = stopWatchRef.value?.time || 0;
-      }
-      
       const actor = await $getActor({}, true);
     
       // prepare an array with the count and repetition values
@@ -88,7 +77,8 @@
 
   const openModal = () => {
     stopWatchRef.value?.stop();
-    duration.value = stopWatchRef.value?.time || 0;
+    
+    let stopWatchDuration = stopWatchRef.value?.time || 0;
     modalSideBarIsOpen.value = true;
 
     // fetch exercise duration
@@ -101,7 +91,20 @@
       // convert to milliseconds
       exDuration = exDuration * 1000;
       exerciseDuration.value = exDuration;
-      duration.value = exDuration;
+    }
+
+    // calculate the total duration
+    if(manualDuration.value > 0){
+      duration.value = manualDuration.value;
+    } 
+    else if(stopWatchDuration > 0){
+      duration.value = stopWatchDuration;
+    }
+    else if(exerciseDuration.value > 0){
+      duration.value = exerciseDuration.value;
+    }
+    else {
+      duration.value = 0;
     }
   };
 
