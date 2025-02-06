@@ -226,14 +226,14 @@
 
   const itemTabs = ref([
     {
-      label: 'Feed',
-      icon: 'i-lucide-rss',
-      slot: 'feed'
-    },
-    {
       label: 'Workouts',
       icon: 'i-lucide-dumbbell',
       slot: 'ownWorkout'
+    },
+    {
+      label: 'Feed',
+      icon: 'i-lucide-rss',
+      slot: 'feed'
     }
   ]);
 
@@ -390,13 +390,14 @@ watch(profileSideBarIsOpen, () => {
           </div>  
           <!-- tabs feed and ownworkouts -->
           <UTabs v-model="activeTab" class="w-full" :items="itemTabs">
+            <template #ownWorkout>
+              <OwnWorkouts @reloadUserProfile="refreshUserProfile"/>
+            </template>
+
             <template #feed>
               <Feed />
             </template>
 
-            <template #ownWorkout>
-              <OwnWorkouts @reloadUserProfile="refreshUserProfile"/>
-            </template>
           </UTabs>
 
       </div>

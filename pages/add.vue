@@ -60,6 +60,10 @@
       // reset the execution list
       executionListRef = ref(null);
 
+      // profile page and show own Workouts
+      navigateTo('/profile');
+
+
     } catch (error) {
       console.error("Error adding addExercise:", error);
     } finally {

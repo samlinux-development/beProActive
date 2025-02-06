@@ -11,8 +11,7 @@ interface Post {
 
 }
 const allPosts = ref<Post[]>(data.map(post => ({ ...post, id: String(post.id) })));
-// sort post by id descending
-console.log(allPosts.value);
+
 useSeoMeta({
   title: $translate('blog.title'),
   description: $translate('blog.description'),
