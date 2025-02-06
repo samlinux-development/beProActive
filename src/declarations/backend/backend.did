@@ -3,6 +3,7 @@ type WorkoutsPerUserResponse =
    date: Time;
    duration: Time;
    exercises: vec Exercise;
+   id: nat;
  };
 type WorkoutPayload = 
  record {
@@ -36,10 +37,12 @@ type Main =
                                    Workout;
                                  };};
          }) query;
+   getCurrentPublicWorkoutId: () -> (nat) query;
    getLatestWorkouts: () -> (vec record {
                                    nat;
                                    LatestWorkouts;
                                  }) query;
+   getMaxPublicWorkouts: () -> (nat) query;
    getPublicReports: () -> (GetPublicReportsResponse) query;
    getRanking: () -> (vec GetRankingResponse) query;
    getUserFeed: () -> (vec GetUserFeedResponse) query;
@@ -48,7 +51,9 @@ type Main =
    getWorkoutsPerPrincipal: () -> (vec WorkoutsPerUserResponse) query;
    removeFriend: (text) -> (bool);
    removeUser: (principal) -> (bool);
+   removeWorkout: (nat) -> (bool);
    setMaxPublicWorkouts: (nat) -> (bool);
+   updatePoints: (principal, nat) -> (nat);
    updateProfile: (UpdateProfile) -> (bool);
  };
 type LatestWorkouts = 

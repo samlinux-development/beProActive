@@ -12,6 +12,7 @@ export const idlFactory = ({ IDL }) => {
     'exercises' : IDL.Vec(Exercise),
   });
   const WorkoutsPerUserResponse = IDL.Record({
+    'id' : IDL.Nat,
     'duration' : Time,
     'date' : Time,
     'exercises' : IDL.Vec(Exercise),
@@ -90,11 +91,13 @@ export const idlFactory = ({ IDL }) => {
         ],
         ['query'],
       ),
+    'getCurrentPublicWorkoutId' : IDL.Func([], [IDL.Nat], ['query']),
     'getLatestWorkouts' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Nat, LatestWorkouts))],
         ['query'],
       ),
+    'getMaxPublicWorkouts' : IDL.Func([], [IDL.Nat], ['query']),
     'getPublicReports' : IDL.Func([], [GetPublicReportsResponse], ['query']),
     'getRanking' : IDL.Func([], [IDL.Vec(GetRankingResponse)], ['query']),
     'getUserFeed' : IDL.Func([], [IDL.Vec(GetUserFeedResponse)], ['query']),
@@ -111,7 +114,9 @@ export const idlFactory = ({ IDL }) => {
       ),
     'removeFriend' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'removeUser' : IDL.Func([IDL.Principal], [IDL.Bool], []),
+    'removeWorkout' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'setMaxPublicWorkouts' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'updatePoints' : IDL.Func([IDL.Principal, IDL.Nat], [IDL.Nat], []),
     'updateProfile' : IDL.Func([UpdateProfile], [IDL.Bool], []),
   });
   return Main;

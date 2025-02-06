@@ -185,4 +185,10 @@ shared ({ caller = creator }) actor class Main () {
     User.getAllUsers(state.users, state.map);
   };
 
+  // remove a given workout by user
+  public shared ({caller}) func removeWorkout(workoutId: Nat): async Bool {
+    if(Principal.isAnonymous(caller)) {return false;};
+    Workout.removeWorkout(caller, workoutId, state.map, state.users);
+  };
+
 }

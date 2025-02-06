@@ -40,9 +40,9 @@ function getPosts(){
 
 const jsonPosts = getPosts();
 
-// sort post by date
+// sort post by id
 jsonPosts.sort((a, b) => {
-  if (a.date < b.date) {
+  if (a.id < b.id) {
     return 1;
   } else {
     return -1;

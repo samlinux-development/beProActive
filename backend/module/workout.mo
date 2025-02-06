@@ -12,6 +12,8 @@ import Text "mo:base/Text";
 import Array "mo:base/Array";
 import Buffer "mo:base/Buffer";
 import Nat16 "mo:base/Nat16";
+import Nat "mo:base/Nat";
+import Debug "mo:base/Debug";
 
 import Helper "helper";
 
@@ -110,6 +112,35 @@ module {
           friends = u.friends;
           points = newPoints;
         };
+        Map.set(users, phash, caller, newUser);
+        return true;
+      };
+      case (null) {
+        return false;
+      };
+    };
+  };
+
+  // remove points from a user
+  func removePoints(caller:Principal, workout:StateTypes.Workout, users: Map.Map<Principal, StateTypes.User>): Bool{
+    let user = Map.get(users, phash, caller);
+    switch (user) {
+      case (?u) {
+        let points = calcPoints(workout);
+        if(points > u.points) {
+          return false;
+        };
+        //Debug.print("Points "#debug_show(points));
+        //Debug.print("u.points "#debug_show(u.points));
+        let newPoints = Nat.sub(u.points, points);
+
+        let newUser:StateTypes.User = {
+          alias = u.alias;
+          size = u.size;
+          friends = u.friends;
+          points = newPoints;
+        };
+        
         Map.set(users, phash, caller, newUser);
         return true;
       };
@@ -255,13 +286,15 @@ module {
       let wOpt = Map.get(map, phash, caller);
       switch (wOpt) {
         case (?w) {
-          for (value in Map.vals(w.workouts)) {
+          // I need to loop over the workouts and return them with the id as key
+          for ((key, value) in Map.entries(w.workouts)) {
             buffer.add({
+              id = key;
               date = value.date;
               duration = value.duration;
               exercises = value.exercises;
             });
-          };
+          };        
         };
         case (null) {
           //Debug.print("Workout not found");
@@ -290,4 +323,46 @@ module {
     Buffer.toArray(buffer);
   };
 
+  // remove a given workout by user
+  public func removeWorkout(
+    caller:Principal, 
+    workoutId:Nat, 
+    map: Map.Map<Principal, StateTypes.WorkoutToStore>,
+    users: Map.Map<Principal, StateTypes.User>
+    ): Bool{
+    if (Map.contains(map, phash, caller) == ?true){
+      let wOpt = Map.get(map, phash, caller);
+      switch (wOpt) {
+        case (?w) {
+          
+          if (Map.contains(w.workouts, nhash, workoutId) == ?true) {
+            // ------------------------------
+            // remove the points to the user from the workout with the workoutId
+            // ------------------------------
+            let workout = Map.get(w.workouts, nhash, workoutId);
+            switch (workout) {
+              case (?w) {
+                let _r = removePoints(caller, w, users);
+              };
+              case (null) {
+                //Debug.print("Workout not found");
+              };
+            };
+
+            // ------------------------------
+            // remove the workout from the user
+            // ------------------------------
+            ignore Map.remove(w.workouts, nhash, workoutId);
+            
+            return true;
+          };
+        };
+        case (null) {
+          //Debug.print("Workout not found");
+          return false;
+        };
+      };
+    };
+    return false;
+  };
 }

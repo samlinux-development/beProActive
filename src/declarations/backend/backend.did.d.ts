@@ -65,7 +65,9 @@ export interface Main {
     [],
     Array<[Principal, { 'workouts' : Array<[bigint, Workout]> }]>
   >,
+  'getCurrentPublicWorkoutId' : ActorMethod<[], bigint>,
   'getLatestWorkouts' : ActorMethod<[], Array<[bigint, LatestWorkouts]>>,
+  'getMaxPublicWorkouts' : ActorMethod<[], bigint>,
   'getPublicReports' : ActorMethod<[], GetPublicReportsResponse>,
   'getRanking' : ActorMethod<[], Array<GetRankingResponse>>,
   'getUserFeed' : ActorMethod<[], Array<GetUserFeedResponse>>,
@@ -74,7 +76,9 @@ export interface Main {
   'getWorkoutsPerPrincipal' : ActorMethod<[], Array<WorkoutsPerUserResponse>>,
   'removeFriend' : ActorMethod<[string], boolean>,
   'removeUser' : ActorMethod<[Principal], boolean>,
+  'removeWorkout' : ActorMethod<[bigint], boolean>,
   'setMaxPublicWorkouts' : ActorMethod<[bigint], boolean>,
+  'updatePoints' : ActorMethod<[Principal, bigint], bigint>,
   'updateProfile' : ActorMethod<[UpdateProfile], boolean>,
 }
 export type Time = bigint;
@@ -89,6 +93,7 @@ export interface WorkoutPayload {
   'exercises' : Array<Exercise>,
 }
 export interface WorkoutsPerUserResponse {
+  'id' : bigint,
   'duration' : Time,
   'date' : Time,
   'exercises' : Array<Exercise>,

@@ -17,6 +17,7 @@ module {
   };
 
   public type WorkoutsPerUserResponse = {
+    id : Nat;
     date : Time.Time; 
     duration : Time.Time; 
     exercises : [StateTypes.Exercise];

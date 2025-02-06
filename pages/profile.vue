@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import { ref, useTemplateRef } from 'vue'
   import { useNuxtApp } from '#app'
-  
+
   import { type Principal } from '@dfinity/principal';
   import { isAuthenticated } from '../src/utils/helper.js';
   import type { FormSubmitEvent, TableColumn } from '@nuxt/ui';
@@ -30,6 +30,7 @@
   const isFriendsSidebarLoading = ref<boolean>(false);
   const friendsSidebarSelectFriendItems = ref<SelectFriendItem[]>([]);
   const allUsers = ref<[]>([]);
+
 
   const userDetailFormState = reactive({
     alias: '', size: 0
@@ -158,8 +159,12 @@
     const userProfile = await actor.getUserProfile();
     if(userProfile) {
       user.value = userProfile.alias;
+      friends.value = userProfile.friends;
       totalWorkouts.value = userProfile.totalWorkouts;
       points.value = userProfile.points;
+      
+      userDetailFormState.alias = user.value;
+      userDetailFormState.size = userProfile.size;
     }
   };
 
@@ -390,7 +395,7 @@ watch(profileSideBarIsOpen, () => {
             </template>
 
             <template #ownWorkout>
-              <OwnWorkouts />
+              <OwnWorkouts @reloadUserProfile="refreshUserProfile"/>
             </template>
           </UTabs>
 
