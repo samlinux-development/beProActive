@@ -59,6 +59,9 @@ watch(
     <div class="hello">
       {{ replaceCount($translate('index.hello2'),'__totalUsers__', totalUsers) }}
     </div>
+    <div class="flex items-center justify-center mb-4">
+      <UButton @click="navigateTo('/getting-started')" color="info">{{ $translate('btn-getStarted')}}</UButton>
+    </div>
     <UTabs v-model="activeTab" class="w-full" :items="itemTabs">
       <template #latestWorkouts>
         <LatestWorkouts /> 

@@ -9,6 +9,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       'index.title': 'Be ProActive',
       'index.hello': 'Check out the newest workout warriors crushing their fitness goals! 💪 Are you ready to join the leaderboard with your own epic sessions?',
       'index.hello2': 'Help to grow the community by sharing your workout achievements! Train with __totalUsers__ other fitness enthusiasts and inspire each other to reach new heights! 🏋️‍♂️',
+
       'pwa.refresh-button': 'New version available, click to update',
       
       'navigation.menu.about': 'About',
@@ -92,6 +93,12 @@ export default defineNuxtPlugin((nuxtApp) => {
       'ranking.desc': 'Check out the top fitness warriors crushing their workouts! 🚀 Are you ready to join the leaderboard with your own epic sessions?',
       'blog.title': 'Blog about BeProActive',
       'blog.description': 'Read all about the latest news and updates on our blog.',
+
+      'btn-getStarted': 'Learn How to Use the App',
+
+      'getting-started.title': 'Learn How to Use the App',
+      'getting-started.desc': 'Here are some steps to get you started:',
+
       'workout.typeOfExercise0':'Choose exercise',
       'workout.typeOfExercise1':'Push-ups',
       'workout.typeOfExercise2':'Squat',
@@ -136,6 +143,8 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.typeOfExercise41':'Single-leg Stance',
       'workout.typeOfExercise42':'Knee Push-ups',
       'workout.typeOfExercise43':'Daily Morning Routine',
+
+
 
     };
     return translations[key] || key;
