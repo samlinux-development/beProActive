@@ -48,6 +48,10 @@ export const exerciseOptions = [
   { value: "41", info:'single_leg_stance', label:'', add:'minutes'},
   { value: "42", info:'knee_push_ups', label:'', add:'kg'},
   { value: "43", info:'daily_morning_routine', label:'', add:'minutes'},
+  { value: "44", info:'bird_doge', label:'', add:'kg'},
+  { value: "45", info:'side_plank', label:'', add:'kg'},
+  { value: "46", info:'core_stabilizer', label:'', add:'kg'},
+
   
 
 ];

@@ -143,7 +143,9 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.typeOfExercise41':'Single-leg Stance',
       'workout.typeOfExercise42':'Knee Push-ups',
       'workout.typeOfExercise43':'Daily Morning Routine',
-
+      'workout.typeOfExercise44':'Bird Dog',
+      'workout.typeOfExercise45':'Side Plank',
+      'workout.typeOfExercise46':'Core Stabilizer',  
 
 
     };
