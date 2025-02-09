@@ -114,13 +114,13 @@ defineExpose({ executions });
 
         <div class="execution-item" v-if="execution.typeOfExercise !== null">
           <div class="flex flex-row items-center gap-x-2">
-            <UInputNumber 
+            <UInput 
               type="number"  
               v-model="execution.set" 
               placeholder="set" 
               :min="1"
               :default-value="1"
-              class="w-[100px] font-semibold"/>
+              class="w-[60px] sm:w-[80px] font-semibold"/>
 
             <UInput  
               v-if="translatedExerciseOptions.find(option => option.value === execution.typeOfExercise)?.add === 'kg'"
