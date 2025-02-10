@@ -117,6 +117,7 @@ defineExpose({ executions });
             <UInput 
               type="number"  
               v-model="execution.set" 
+              inputmode="numeric" pattern="[0-9]*"
               placeholder="set" 
               :min="1"
               :default-value="1"
