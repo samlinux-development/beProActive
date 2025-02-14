@@ -63,14 +63,14 @@ translatedExerciseOptions.sort((a, b) => a.label.localeCompare(b.label));
 
 
 const executions = ref<Exercise[]>([
-  { typeOfExercise: null, set: 1, repetition: null, kg: null, seconds: null, minutes: null }
+  { typeOfExercise: null, set: null, repetition: null, kg: null, seconds: null, minutes: null }
 ]);
 
 const addExecution = async () => {
 
   const lastExecution = executions.value[executions.value.length - 1];
   if (lastExecution.set !== null && lastExecution.typeOfExercise !== null) { 
-    executions.value.push({ set: 1, repetition: null, kg: null, typeOfExercise: null, seconds: null, minutes: null });
+    executions.value.push({ set: null, repetition: null, kg: null, typeOfExercise: null, seconds: null, minutes: null });
   }
 };
 
@@ -120,7 +120,6 @@ defineExpose({ executions });
               inputmode="numeric" pattern="[0-9]*"
               placeholder="set" 
               :min="1"
-              :default-value="1"
               class="w-[60px] sm:w-[80px] font-semibold"/>
 
             <UInput  
