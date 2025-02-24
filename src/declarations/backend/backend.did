@@ -5,6 +5,11 @@ type WorkoutsPerUserResponse =
    exercises: vec Exercise;
    id: nat;
  };
+type WorkoutsPerRangeResponse = 
+ record {
+   totalCount: int;
+   totalDuration: int;
+ };
 type WorkoutPayload = 
  record {
    duration: Time;
@@ -15,6 +20,11 @@ type Workout =
    date: Time;
    duration: Time;
    exercises: vec Exercise;
+ };
+type WeeklyStats = 
+ record {
+   totalDuration: int;
+   totalWorkouts: int;
  };
 type UpdateProfile = 
  record {
@@ -47,12 +57,18 @@ type Main =
    getRanking: () -> (vec GetRankingResponse) query;
    getUserFeed: () -> (vec GetUserFeedResponse) query;
    getUserProfile: () -> (GetUserProfileResponse) query;
+   getUserWeeklyStats: () -> (vec record {
+                                    int;
+                                    WeeklyStats;
+                                  }) query;
    getWorkoutReports: (nat16) -> (GetWorkoutReportsResponse) query;
    getWorkoutsPerPrincipal: () -> (vec WorkoutsPerUserResponse) query;
+   getWorkoutsPerRangeReport: (int, int) -> (WorkoutsPerRangeResponse) query;
    removeFriend: (text) -> (bool);
    removeUser: (principal) -> (bool);
    removeWorkout: (nat) -> (bool);
    setMaxPublicWorkouts: (nat) -> (bool);
+   testNormalizeToWeekStart: (int) -> (int) query;
    updatePoints: (principal, nat) -> (nat);
    updateProfile: (UpdateProfile) -> (bool);
  };

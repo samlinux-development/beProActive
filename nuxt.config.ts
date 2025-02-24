@@ -26,7 +26,7 @@ export default defineNuxtConfig({
       network: process.env.NUXT_PUBLIC_DFX_NETWORK,
       matomo_host: "https://veriable.matomo.cloud/",
       matomo_site_id: 9,
-      frontendBuild: 'v0.5.2'
+      frontendBuild: 'v0.6.0'
     }
   },
   components: [

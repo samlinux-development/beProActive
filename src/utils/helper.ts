@@ -63,3 +63,26 @@ export const formatDuration = (milliseconds: bigint) => {
   return formatTime.trim();
 };
 
+
+export const getWeekNumberAndYear = (nsTimestamp:number) => {
+  // Convert nanoseconds to milliseconds
+  let msTimestamp = Math.floor(nsTimestamp / 1_000_000);
+  let date = new Date(msTimestamp);
+  
+  // Extract the year
+  let year = date.getUTCFullYear();
+
+  // Find the first day of the year
+  let firstDayOfYear = new Date(Date.UTC(year, 0, 1));
+
+  // Get the day number of the year (0-based index)
+  let dayOfYear = Math.floor((date.getTime() - firstDayOfYear.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+  // Compute week number (ISO 8601: weeks start on Monday)
+  let weekNumber = Math.ceil((dayOfYear + firstDayOfYear.getUTCDay()) / 7);
+  
+  //console.log('weekNumber: ',weekNumber);
+  //console.log('year: ',year);
+
+  return weekNumber + '/' + year;
+}

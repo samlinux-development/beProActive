@@ -62,11 +62,19 @@ export const idlFactory = ({ IDL }) => {
     'date' : Time,
     'exercises' : IDL.Vec(Exercise),
   });
+  const WeeklyStats = IDL.Record({
+    'totalDuration' : IDL.Int,
+    'totalWorkouts' : IDL.Int,
+  });
   const GetWorkoutReportsResponse = IDL.Record({
     'totalSetsPerExercise' : IDL.Nat16,
     'totalExercises' : IDL.Nat,
     'totalWorkouts' : IDL.Nat,
     'totalRepsPerExercise' : IDL.Nat16,
+  });
+  const WorkoutsPerRangeResponse = IDL.Record({
+    'totalDuration' : IDL.Int,
+    'totalCount' : IDL.Int,
   });
   const UpdateProfile = IDL.Record({ 'alias' : IDL.Text, 'size' : IDL.Nat16 });
   const Main = IDL.Service({
@@ -102,6 +110,11 @@ export const idlFactory = ({ IDL }) => {
     'getRanking' : IDL.Func([], [IDL.Vec(GetRankingResponse)], ['query']),
     'getUserFeed' : IDL.Func([], [IDL.Vec(GetUserFeedResponse)], ['query']),
     'getUserProfile' : IDL.Func([], [GetUserProfileResponse], ['query']),
+    'getUserWeeklyStats' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Int, WeeklyStats))],
+        ['query'],
+      ),
     'getWorkoutReports' : IDL.Func(
         [IDL.Nat16],
         [GetWorkoutReportsResponse],
@@ -112,10 +125,16 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(WorkoutsPerUserResponse)],
         ['query'],
       ),
+    'getWorkoutsPerRangeReport' : IDL.Func(
+        [IDL.Int, IDL.Int],
+        [WorkoutsPerRangeResponse],
+        ['query'],
+      ),
     'removeFriend' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'removeUser' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'removeWorkout' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'setMaxPublicWorkouts' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'testNormalizeToWeekStart' : IDL.Func([IDL.Int], [IDL.Int], ['query']),
     'updatePoints' : IDL.Func([IDL.Principal, IDL.Nat], [IDL.Nat], []),
     'updateProfile' : IDL.Func([UpdateProfile], [IDL.Bool], []),
   });

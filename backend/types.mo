@@ -76,4 +76,10 @@ module {
     alias: Text;
     size: Nat16;
   };
+
+  public type WorkoutsPerRangeResponse = {
+    totalCount: Int;
+    totalDuration: Int;
+  };
+
 };

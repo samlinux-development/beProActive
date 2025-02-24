@@ -349,4 +349,23 @@ module {
       };
     };
   };
+
+  // get users stats per week
+  public func getWeeklyStatsPerUser(
+    user: Principal, 
+    stats: Map.Map<Principal, StateTypes.StatsPerUser>): [(Int, StateTypes.WeeklyStats)] {
+
+    switch ( Map.get(stats, phash, user) ) {
+      case (?s) {
+        let buffer = Buffer.Buffer<(Int, StateTypes.WeeklyStats)>(1);
+        for ((key, value) in Map.entries(s.weekStats)) {
+          buffer.add((key, value));
+        };
+        Buffer.toArray(buffer);
+      };
+      case (null) {
+        [];
+      };
+    };
+  };
 };

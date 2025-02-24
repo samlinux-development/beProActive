@@ -12,6 +12,7 @@
 
   onMounted(async () => {
     await loadWorkouts();
+
   });
 
   const loadWorkouts = async () => {
@@ -54,6 +55,7 @@
     // reload profile data
     emit('reloadUserProfile');
   };
+
 </script>
 <template>
   <div v-if="isLoading"> <Spinner /> </div>

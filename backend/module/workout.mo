@@ -4,6 +4,7 @@ import Types "../types";
 import Map "mo:map/Map";
 import { phash } "mo:map/Map";
 import { nhash } "mo:map/Map";
+import { ihash } "mo:map/Map";
 
 import Time "mo:base/Time";
 import Principal "mo:base/Principal";
@@ -14,10 +15,13 @@ import Buffer "mo:base/Buffer";
 import Nat16 "mo:base/Nat16";
 import Nat "mo:base/Nat";
 import Debug "mo:base/Debug";
+import Int "mo:base/Int";
+
 
 import Helper "helper";
 
 module {
+ 
   let StateTypes = MigrationTypes.Current;
 
   // add a new workout to the user's workout map
@@ -34,6 +38,7 @@ module {
     map: Map.Map<Principal, StateTypes.WorkoutToStore>,
     latestWorkout: Map.Map<Nat, StateTypes.LatestWorkouts>,
     users: Map.Map<Principal, StateTypes.User>,
+    stats: Map.Map<Principal, StateTypes.StatsPerUser>,
     maxPublicWorkouts:Nat,
     currentPublicWorkoutId:Nat) : async Bool {
 
@@ -58,6 +63,9 @@ module {
 
           // add the points to the user
           let _r2 = addPoints(caller, newWorkout, users);
+
+          // add workout stats to weekly user stats
+          let _r3 = addWorkoutStats(caller, workout, stats);
 
         };
         case (null) {
@@ -93,9 +101,60 @@ module {
       // add the points to the user
       let _r2 = addPoints(caller, newWorkout, users);
       
+      // add workout stats to weekly user stats
+      let _r3 = addWorkoutStats(caller, workout, stats);
+      
       //Debug.print("First Workout added");
       return true;
     }
+  };
+  
+  // add workout stats to weekls users stats
+  public func addWorkoutStats(
+    caller: Principal, 
+    workout: StateTypes.WorkoutPayload, 
+    stats: Map.Map<Principal, StateTypes.StatsPerUser>
+  ): Bool {
+    
+    let week = Helper.normalizeToWeekStart(Time.now());
+    
+    switch (Map.get(stats, phash, caller)) {
+      case (?w) {
+        // If user exists, get weekly stats
+        switch (Map.get(w.weekStats, ihash, week)) {
+          case (?ws) {
+            // Update existing weekly stats
+            let newWeeklyStats: StateTypes.WeeklyStats = {
+              totalWorkouts = ws.totalWorkouts + 1;
+              totalDuration = ws.totalDuration + workout.duration;
+            };
+            Map.set(w.weekStats, ihash, week, newWeeklyStats);
+          };
+          case null {
+            // Create new weekly stats for the current week
+            let newWeeklyStats: StateTypes.WeeklyStats = {
+              totalWorkouts = 1;
+              totalDuration = workout.duration;
+            };
+            Map.set(w.weekStats, ihash, week, newWeeklyStats);
+          };
+        };
+      };
+      case null {
+        // If user does not exist, create new user stats
+        let newWeeklyStats: StateTypes.WeeklyStats = {
+          totalWorkouts = 1;
+          totalDuration = workout.duration;
+        };
+        let newStats: StateTypes.StatsPerUser = {
+          weekStats = Map.new<Int, StateTypes.WeeklyStats>(); // Ensure proper typing
+        };
+        Map.set(newStats.weekStats, ihash, week, newWeeklyStats);
+        Map.set(stats, phash, caller, newStats);
+      };
+    };
+    
+    return true;
   };
 
   // add points to a user
@@ -364,5 +423,38 @@ module {
       };
     };
     return false;
+  };
+
+  // get all workouts from the current week for a given user
+  public func getWorkoutsPerRangeReport(
+    caller:Principal, 
+    firstDayReport:Int,
+    lastDayReport:Int,
+    map: Map.Map<Principal, StateTypes.WorkoutToStore>): Types.WorkoutsPerRangeResponse{
+    
+    var totalDuration:Int=0;
+    var totalCount:Int=0;
+
+    switch (Map.get(map, phash, caller)) {
+      case (?w) {
+        let workouts = Map.vals(w.workouts);
+        
+        for (workout in workouts) {
+          if (workout.date >= firstDayReport and workout.date <= lastDayReport) {
+            totalDuration := totalDuration + workout.duration;
+            totalCount := totalCount + 1;
+          };
+        };
+      };
+      case (null) {
+        Debug.print("Workout not found");
+      };
+    };
+    
+    {
+      totalCount = totalCount;
+      totalDuration = totalDuration;
+    };
+
   };
 }

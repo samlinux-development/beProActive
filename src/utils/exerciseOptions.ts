@@ -51,8 +51,8 @@ export const exerciseOptions = [
   { value: "44", info:'bird_doge', label:'', add:'kg'},
   { value: "45", info:'side_plank', label:'', add:'kg'},
   { value: "46", info:'core_stabilizer', label:'', add:'kg'},
+  { value: "47", info:'alpine_ski_touring', label:'', add:'minutes'}
 
   
-
 ];
 

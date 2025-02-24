@@ -2,6 +2,7 @@ import Debug "mo:base/Debug";
 import Bool "mo:base/Bool";
 import Principal "mo:base/Principal";
 import Text "mo:base/Text";
+import Int "mo:base/Int";
 
 import MigrationTypes "./migrations/types";
 import Migrations "./migrations";
@@ -9,6 +10,7 @@ import Types "./types";
 
 import Map "mo:map/Map";
 
+import Helper "module/helper";
 import User "module/user";
 import Workout "module/workout";
 
@@ -20,12 +22,12 @@ shared ({ caller = creator }) actor class Main () {
   // move all your stable variable declarations to "migrations/001-initial/types.mo -> State"
   stable var migrationState: MigrationTypes.State = #v0_0_0(#data);
 
-  // do not forget to change #v0_1_0 when you are adding a new migration
-  // if you use one of previus states in place of #v0_1_0 it will run downgrade methods instead
-  migrationState := Migrations.migrate(migrationState, #v0_1_1(#id), { creator });
+  // do not forget to change #v0_1_2 when you are adding a new migration
+  // if you use one of previus states in place of #v0_1_1 it will run downgrade methods instead
+  migrationState := Migrations.migrate(migrationState, #v0_1_2(#id), { creator });
 
-  // do not forget to change #v0_1_0 when you are adding a new migration
-  let state = switch (migrationState) { case (#v0_1_1(#data(state))) state; case (_) Debug.trap("Unexpected migration state") };
+  // do not forget to change #v0_1_2 when you are adding a new migration
+  let state = switch (migrationState) { case (#v0_1_2(#data(state))) state; case (_) Debug.trap("Unexpected migration state") };
 
   //----------------------------------
   // public methods
@@ -118,6 +120,7 @@ shared ({ caller = creator }) actor class Main () {
       state.map, 
       state.latestWorkouts, 
       state.users, 
+      state.stats,
       state.maxPublicWorkouts,
       state.currentPublicWorkoutId
       );
@@ -191,4 +194,21 @@ shared ({ caller = creator }) actor class Main () {
     Workout.removeWorkout(caller, workoutId, state.map, state.users);
   };
 
+  // get workouts per range
+  public shared query ({caller}) func getWorkoutsPerRangeReport(firstDay:Int, lastDay:Int): async Types.WorkoutsPerRangeResponse {
+    if(Principal.isAnonymous(caller)) {return {totalDuration=0; totalCount=0; }};
+    Workout.getWorkoutsPerRangeReport(caller, firstDay, lastDay, state.map);
+  };
+
+  // get users stats
+  public shared query ({caller}) func getUserWeeklyStats(): async [(Int, StateTypes.WeeklyStats)] {
+    if(Principal.isAnonymous(caller)) {return []};
+    User.getWeeklyStatsPerUser(caller, state.stats);
+  };
+
+  // test normalizeToWeekStart function
+  public shared query func testNormalizeToWeekStart(timestamp: Int): async Int {
+    Helper.normalizeToWeekStart(timestamp);
+  }
+  
 }

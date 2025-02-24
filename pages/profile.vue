@@ -234,6 +234,11 @@
       label: 'Feed',
       icon: 'i-lucide-rss',
       slot: 'feed'
+    },
+    {
+      label: 'Stats',
+      icon: 'i-lucide-chart-column',
+      slot: 'stats'
     }
   ]);
 
@@ -396,6 +401,10 @@ watch(profileSideBarIsOpen, () => {
 
             <template #feed>
               <Feed />
+            </template>
+
+            <template #stats>
+              <Stats />
             </template>
 
           </UTabs>

@@ -66,7 +66,7 @@
 
       // sort by points
       sportsmanData.value.sort((a, b) => Number(b.points) - Number(a.points));
-
+      console.log(sportsmanData.value)
       isLoading.value = false;
     } catch (error) {
       console.error("Error fetching workouts per principal:", error);

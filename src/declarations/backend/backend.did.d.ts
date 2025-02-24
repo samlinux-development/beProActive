@@ -72,17 +72,27 @@ export interface Main {
   'getRanking' : ActorMethod<[], Array<GetRankingResponse>>,
   'getUserFeed' : ActorMethod<[], Array<GetUserFeedResponse>>,
   'getUserProfile' : ActorMethod<[], GetUserProfileResponse>,
+  'getUserWeeklyStats' : ActorMethod<[], Array<[bigint, WeeklyStats]>>,
   'getWorkoutReports' : ActorMethod<[number], GetWorkoutReportsResponse>,
   'getWorkoutsPerPrincipal' : ActorMethod<[], Array<WorkoutsPerUserResponse>>,
+  'getWorkoutsPerRangeReport' : ActorMethod<
+    [bigint, bigint],
+    WorkoutsPerRangeResponse
+  >,
   'removeFriend' : ActorMethod<[string], boolean>,
   'removeUser' : ActorMethod<[Principal], boolean>,
   'removeWorkout' : ActorMethod<[bigint], boolean>,
   'setMaxPublicWorkouts' : ActorMethod<[bigint], boolean>,
+  'testNormalizeToWeekStart' : ActorMethod<[bigint], bigint>,
   'updatePoints' : ActorMethod<[Principal, bigint], bigint>,
   'updateProfile' : ActorMethod<[UpdateProfile], boolean>,
 }
 export type Time = bigint;
 export interface UpdateProfile { 'alias' : string, 'size' : number }
+export interface WeeklyStats {
+  'totalDuration' : bigint,
+  'totalWorkouts' : bigint,
+}
 export interface Workout {
   'duration' : Time,
   'date' : Time,
@@ -91,6 +101,10 @@ export interface Workout {
 export interface WorkoutPayload {
   'duration' : Time,
   'exercises' : Array<Exercise>,
+}
+export interface WorkoutsPerRangeResponse {
+  'totalDuration' : bigint,
+  'totalCount' : bigint,
 }
 export interface WorkoutsPerUserResponse {
   'id' : bigint,

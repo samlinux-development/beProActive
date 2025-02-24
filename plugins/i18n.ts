@@ -99,6 +99,13 @@ export default defineNuxtPlugin((nuxtApp) => {
       'getting-started.title': 'Learn How to Use the App',
       'getting-started.desc': 'Here are some steps to get you started:',
 
+      'stats.title': 'Your Stats',
+      'stats.desc': 'Here are your current stats! Keep up the great work - every session brings you closer to the WHO’s recommended 150 minutes of weekly movement.',
+      'stats.week': 'Week',
+      'stats.duration': 'Duration',
+      'stats.workouts': 'Workouts',
+      'stats.whoGap':'WHO Rec',
+
       'workout.typeOfExercise0':'Choose exercise',
       'workout.typeOfExercise1':'Push-ups',
       'workout.typeOfExercise2':'Squat',
@@ -146,6 +153,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       'workout.typeOfExercise44':'Bird Dog',
       'workout.typeOfExercise45':'Side Plank',
       'workout.typeOfExercise46':'Core Stabilizer',  
+      'workout.typeOfExercise47':'Alpine Ski Touring'
 
 
     };
