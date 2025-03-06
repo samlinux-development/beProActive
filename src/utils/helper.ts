@@ -80,9 +80,13 @@ export const getWeekNumberAndYear = (nsTimestamp:number) => {
 
   // Compute week number (ISO 8601: weeks start on Monday)
   let weekNumber = Math.ceil((dayOfYear + firstDayOfYear.getUTCDay()) / 7);
-  
-  //console.log('weekNumber: ',weekNumber);
+  let weeekNummerFormat:string = ''+weekNumber;
+  if(weekNumber < 10) {
+    weeekNummerFormat = '0' + weekNumber;
+  }
+
+  //console.log('weekNumber: ',weeekNummerFormat);
   //console.log('year: ',year);
 
-  return weekNumber + '/' + year;
+  return weeekNummerFormat + '/' + year;
 }
